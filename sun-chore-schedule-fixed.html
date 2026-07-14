@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sunrise — chores, then free time</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --dusk:#3B0D2E; --ember:#C81D25; --flame:#F25C05;
+    --amber:#FF9505; --gold:#FFD23F; --cream:#FFF4DA; --ink:#2B0A20;
+    --display:"Fredoka","Trebuchet MS",sans-serif;
+    --body:"Nunito","Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:var(--body); font-size:15px; color:var(--cream); min-height:100vh; overflow-x:hidden;
+    background-image:radial-gradient(130% 95% at 50% 105%, var(--gold) 0%, var(--amber) 20%, var(--flame) 42%, var(--ember) 66%, var(--dusk) 100%);
+    background-attachment:fixed; padding:20px 16px 64px; display:flex; justify-content:center;
+  }
+  body[data-band="morning"]{background-image:radial-gradient(130% 95% at 50% 105%, #FFD23F 0%, #FF9505 22%, #E85D5D 48%, #8A3060 74%, #3F1C4E 100%)}
+  body[data-band="day"]{background-image:radial-gradient(130% 95% at 50% 105%, #FFE27A 0%, #FFC72E 22%, #FF9505 46%, #F25C05 72%, #A63A00 100%)}
+  body[data-band="sunset"]{background-image:radial-gradient(130% 95% at 50% 105%, #FFD23F 0%, #FF9505 20%, #F25C05 42%, #C81D25 66%, #3B0D2E 100%)}
+  body[data-band="night"]{background-image:radial-gradient(130% 95% at 50% 105%, #C81D25 0%, #7A1E3C 26%, #3B0D2E 55%, #1A0620 80%, #0B0313 100%)}
+  body::before{
+    content:""; position:fixed; inset:-20%; pointer-events:none; z-index:0;
+    background:radial-gradient(closest-side, rgba(255,210,63,.3), transparent 70%);
+    animation:breathe 6s ease-in-out infinite;
+  }
+  body[data-band="day"]::before{background:radial-gradient(closest-side, rgba(255,210,63,.42), transparent 70%)}
+  body[data-band="night"]::before{background:radial-gradient(closest-side, rgba(255,244,218,.13), transparent 70%)}
+  @keyframes breathe{0%,100%{transform:scale(.9);opacity:.5}50%{transform:scale(1.18);opacity:1}}
+  canvas#embers{position:fixed;inset:0;pointer-events:none;z-index:0}
+  canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:99}
+  #flash{position:fixed;inset:0;background:#FFF4DA;opacity:0;pointer-events:none;z-index:98}
+  #flash.on{animation:flash .6s ease-out}
+  @keyframes flash{0%{opacity:.85}100%{opacity:0}}
+  .wrap{width:100%;max-width:680px;position:relative;z-index:1}
+
+  .topbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+  .langs{display:flex;gap:6px;flex-wrap:wrap;margin-right:auto}
+  .pill{
+    font-family:var(--display);font-size:12px;font-weight:600;cursor:pointer;
+    background:rgba(43,10,32,.3);color:var(--cream);
+    border:2px solid rgba(255,244,218,.35);border-radius:99px;padding:5px 10px;
+    transition:transform .12s,background .15s;
+  }
+  .pill:hover{transform:translateY(-2px) scale(1.05)}
+  .pill.on{background:var(--cream);color:var(--ink);border-color:var(--gold);box-shadow:0 0 0 3px rgba(255,210,63,.35)}
+  .iconb{
+    width:38px;height:38px;border-radius:12px;cursor:pointer;font-size:17px;line-height:1;
+    background:rgba(43,10,32,.3);border:2px solid rgba(255,244,218,.35);color:var(--cream);
+    transition:transform .12s;
+  }
+  .iconb:hover{transform:scale(1.12) rotate(-6deg);background:rgba(255,244,218,.16)}
+
+  .hero{text-align:center;padding:2px 0 2px}
+  .mascot{width:130px;height:130px;margin:0 auto 6px;display:block;cursor:pointer;animation:bob 3s ease-in-out infinite}
+  .mascot:hover{animation:spin2 .8s ease-in-out}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-12px) rotate(3deg)}}
+  @keyframes spin2{to{transform:rotate(360deg) scale(1.15)}}
+  #orbit{transform-origin:60px 60px;animation:spin 7s linear infinite reverse}
+  h1{
+    font-family:var(--display); font-weight:700;
+    font-size:clamp(29px,7.5vw,49px); line-height:1.05; letter-spacing:-.01em;
+    text-shadow:0 4px 0 rgba(43,10,32,.3), 0 0 34px rgba(255,210,63,.5);
+  }
+  h1 .w{display:inline-block;animation:wig 2.6s ease-in-out infinite}
+  @keyframes wig{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-5px) rotate(-2deg)}75%{transform:translateY(3px) rotate(2deg)}}
+  .sub{font-size:15px;opacity:.94;margin:12px auto 0;max-width:46ch;animation:dropIn .6s .1s both}
+  @keyframes dropIn{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:none}}
+  .card{
+    background:rgba(255,244,218,.15); border:2px solid rgba(255,244,218,.34);
+    backdrop-filter:blur(6px); border-radius:22px; padding:18px; margin-top:20px;
+    animation:dropIn .6s .15s both; position:relative;
+  }
+  .lbl{font-family:var(--display);font-size:14px;letter-spacing:.06em;text-transform:uppercase;opacity:.9;margin-bottom:12px;display:block}
+  .tag{font-style:normal;font-family:var(--display);text-transform:none;letter-spacing:0;font-size:12px;background:rgba(43,10,32,.35);border:1px solid rgba(255,244,218,.35);padding:3px 12px;border-radius:99px;margin-left:8px;vertical-align:1px}
+  .chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+  .chip{
+    display:flex;align-items:center;gap:10px;
+    background:rgba(43,10,32,.24); border:2px solid transparent; border-radius:16px; padding:10px 12px;
+    cursor:pointer; transition:transform .14s cubic-bezier(.2,1.6,.4,1),background .15s,border-color .15s,box-shadow .15s;
+  }
+  .chip:hover{transform:translateY(-4px) rotate(-1deg) scale(1.02);box-shadow:0 8px 18px rgba(43,10,32,.3)}
+  .chip.on{background:var(--cream);color:var(--ink);border-color:var(--gold);box-shadow:0 0 0 4px rgba(255,210,63,.35)}
+  .chip.pop{animation:pop .4s cubic-bezier(.2,1.9,.4,1)}
+  @keyframes pop{0%{transform:scale(1)}35%{transform:scale(1.12) rotate(2deg)}100%{transform:scale(1)}}
+  .chip .name{font-weight:800;font-size:14px;flex:1;text-align:left}
+  .box{width:22px;height:22px;border-radius:7px;flex:none;border:2px solid currentColor;display:grid;place-items:center;font-size:12px;font-weight:800}
+  .chip.on .box{background:var(--ember);border-color:var(--ember);color:var(--cream);animation:pop .4s}
+
+  .mins{display:flex;align-items:center;gap:4px;font-family:var(--display);font-size:13px}
+  .step{width:26px;height:24px;border-radius:8px;border:none;cursor:pointer;background:rgba(255,244,218,.28);color:inherit;font-weight:700;line-height:1;transition:transform .1s,background .15s}
+  .chip.on .step{background:rgba(43,10,32,.12)}
+  .step:hover{background:var(--gold);color:var(--ink);transform:scale(1.2)}
+  .step:active{transform:scale(.85)}
+  .m{min-width:46px;text-align:center;font-variant-numeric:tabular-nums;font-weight:600}
+  @media (min-width:640px){
+    .mins{flex-direction:column;gap:2px}
+    .step{width:34px;height:20px}
+    .plus{order:1} .m{order:2} .minus{order:3}
+  }
+
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  input[type=text],input[type=number],input[type=time]{
+    font-family:var(--body);font-weight:600;font-size:14px;
+    background:rgba(43,10,32,.3);color:var(--cream);
+    border:2px solid rgba(255,244,218,.3);border-radius:14px;padding:10px 12px;
+  }
+  input[type=text]{flex:1;min-width:160px}
+  input[type=number]{width:88px}
+  input::placeholder{color:rgba(255,244,218,.55)}
+  .times{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+  .tlab{display:flex;flex-direction:column;gap:6px;font-family:var(--display);font-size:11px;letter-spacing:.05em;text-transform:uppercase;opacity:.9}
+  .arrow{font-size:18px;padding-bottom:12px;opacity:.75}
+  .budget{
+    margin-top:14px;display:inline-block;font-weight:800;font-size:13px;
+    background:rgba(43,10,32,.28);border:1px solid rgba(255,244,218,.25);
+    padding:8px 12px;border-radius:12px;
+  }
+  .budget.bad{background:rgba(200,29,37,.5);animation:pop .4s}
+  button{font-family:var(--display)}
+  .ghost{background:transparent;border:2px dashed rgba(255,244,218,.55);color:var(--cream);border-radius:14px;padding:10px 16px;font-size:14px;font-weight:600;cursor:pointer;transition:transform .12s}
+  .ghost:hover{border-style:solid;background:rgba(255,244,218,.14);transform:rotate(-1deg) scale(1.04)}
+  .go{
+    display:block;width:100%;margin-top:22px;border:none;border-radius:20px;cursor:pointer;
+    background:linear-gradient(100deg,var(--cream),#FFE9B8,var(--cream));background-size:200% 100%;
+    color:var(--ember);font-size:21px;font-weight:700;padding:18px;
+    box-shadow:0 6px 0 rgba(43,10,32,.4), 0 0 30px rgba(255,210,63,.35);
+    transition:transform .1s,box-shadow .1s; animation:shine 3s linear infinite, wobble 4s ease-in-out infinite;
+  }
+  @keyframes shine{to{background-position:-200% 0}}
+  @keyframes wobble{0%,100%{transform:rotate(0)}25%{transform:rotate(-.5deg)}75%{transform:rotate(.5deg)}}
+  .go:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 9px 0 rgba(43,10,32,.4), 0 0 44px rgba(255,210,63,.6)}
+  .go:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(43,10,32,.4)}
+  .go:disabled{opacity:.45;cursor:not-allowed;animation:none;transform:none;box-shadow:0 6px 0 rgba(43,10,32,.4)}
+
+  .horizon{position:relative;height:170px;margin-top:10px;border-radius:22px;overflow:hidden;border:2px solid rgba(255,244,218,.34)}
+  .horizon svg{position:absolute;inset:0;width:100%;height:100%}
+  #sunGroup,#moonGroup{transition:transform 1s cubic-bezier(.34,1.3,.5,1)}
+  #rays{transform-origin:330px 150px;animation:spin 18s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #dawn{transition:opacity 1s ease}
+  #stars{transition:opacity 1.2s ease}
+  .tw{animation:twinkle 2.2s ease-in-out infinite}
+  @keyframes twinkle{0%,100%{opacity:.2}50%{opacity:1}}
+  .cloud{opacity:.34;animation:drift 26s linear infinite}
+  .cloud.b{animation-duration:38s;animation-delay:-9s;opacity:.2}
+  @keyframes drift{from{transform:translateX(-140px)}to{transform:translateX(760px)}}
+  .status{position:absolute;left:16px;bottom:12px;font-family:var(--display);font-size:16px;color:var(--ink);font-weight:600}
+  .bar{position:absolute;right:16px;bottom:14px;height:10px;width:38%;background:rgba(43,10,32,.3);border-radius:99px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ember),var(--gold));transition:width .8s cubic-bezier(.3,1.4,.5,1)}
+  body[data-band="night"] .status{color:var(--cream)}
+  .deadsub{margin-top:8px;font-family:var(--display);font-size:15px;font-weight:600;opacity:.95}
+
+  ul{list-style:none;margin-top:18px;display:flex;flex-direction:column;gap:10px}
+  li{
+    display:flex;align-items:center;gap:12px;
+    background:rgba(255,244,218,.15);border:2px solid rgba(255,244,218,.32);
+    border-radius:18px;padding:12px 14px;
+    transition:opacity .3s,background .2s,transform .2s;
+    animation:slideIn .5s cubic-bezier(.2,1.4,.4,1) both;
+  }
+  @keyframes slideIn{from{opacity:0;transform:translateX(-30px) rotate(-2deg)}to{opacity:1;transform:none}}
+  li.now{background:var(--cream);color:var(--ink);border-color:var(--gold);animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(255,210,63,.35)}50%{box-shadow:0 0 0 12px rgba(255,210,63,.1)}}
+  li.done{opacity:.5}
+  li.done .task{text-decoration:line-through}
+  li.zap{animation:zap .45s cubic-bezier(.2,1.9,.3,1)}
+  @keyframes zap{0%{transform:scale(1)}30%{transform:scale(1.07) rotate(-1.2deg)}100%{transform:scale(1)}}
+  .clock{font-family:var(--display);font-weight:700;font-size:14px;font-variant-numeric:tabular-nums;min-width:96px}
+  .task{font-weight:800;font-size:15px;flex:1}
+  .dur{font-size:12px;font-weight:800;opacity:.7;font-variant-numeric:tabular-nums}
+  .tick{width:38px;height:38px;flex:none;border-radius:12px;border:2px solid currentColor;background:transparent;color:inherit;font-size:17px;font-weight:700;cursor:pointer;transition:transform .12s}
+  .tick:hover{transform:scale(1.18) rotate(8deg)}
+  li.now .tick{background:var(--ember);border-color:var(--ember);color:var(--cream)}
+  li.done .tick{background:var(--ink);border-color:var(--ink);color:var(--gold)}
+
+  .free{margin-top:20px;text-align:center;padding:26px;border-radius:22px;background:var(--cream);color:var(--ember);animation:bounceIn .8s cubic-bezier(.2,1.7,.4,1);box-shadow:0 0 60px rgba(255,210,63,.7)}
+  @keyframes bounceIn{0%{opacity:0;transform:scale(.6) rotate(-5deg)}60%{transform:scale(1.08) rotate(1deg)}100%{opacity:1;transform:none}}
+  .free h2{font-family:var(--display);font-size:clamp(27px,7vw,43px);line-height:1.1;animation:rainbow 1.2s ease-in-out infinite alternate}
+  @keyframes rainbow{from{color:var(--ember)}to{color:var(--amber)}}
+  .free p{color:var(--ink);font-weight:600;margin-top:6px}
+  .again{margin-top:14px;border:none;border-radius:16px;background:var(--ember);color:var(--cream);font-size:16px;font-weight:700;padding:12px 22px;cursor:pointer;transition:transform .12s}
+  .again:hover{transform:scale(1.06) rotate(-1.5deg)}
+  .hidden{display:none!important}
+
+  .tut{position:fixed;inset:0;z-index:120;background:rgba(26,6,32,.72);backdrop-filter:blur(4px);display:grid;place-items:center;padding:20px}
+  .tcard{
+    background:var(--cream);color:var(--ink);border:4px solid var(--gold);border-radius:26px;
+    position:relative;padding:26px 22px 20px;max-width:430px;width:100%;text-align:center;
+    box-shadow:0 0 70px rgba(255,210,63,.65);animation:bounceIn .6s cubic-bezier(.2,1.7,.4,1);
+  }
+  .tmoji{font-size:46px;animation:bob 2.4s ease-in-out infinite}
+  .tcard h3{font-family:var(--display);font-size:23px;margin-top:8px;color:var(--ember)}
+  .tcard p{margin-top:8px;font-weight:600;line-height:1.45}
+  .tdots{display:flex;gap:7px;justify-content:center;margin:16px 0 14px}
+  .tdots i{width:10px;height:10px;border-radius:99px;background:rgba(43,10,32,.2);transition:background .2s,transform .2s}
+  .tdots i.on{background:var(--flame);transform:scale(1.3)}
+  .trow{display:flex;gap:10px;justify-content:space-between}
+  .tskip{background:transparent;border:2px dashed rgba(43,10,32,.35);color:var(--ink);border-radius:14px;padding:10px 16px;font-size:14px;font-weight:600;cursor:pointer}
+  .tskip:hover{border-style:solid}
+  .tnext{flex:1;border:none;border-radius:14px;background:var(--ember);color:var(--cream);font-size:17px;font-weight:700;padding:12px 18px;cursor:pointer;transition:transform .12s;box-shadow:0 4px 0 rgba(43,10,32,.3)}
+  .tnext:hover{transform:translateY(-2px) scale(1.02)}
+  .tnext:active{transform:translateY(2px)}
+
+  /* history */
+  .hcard{max-width:470px;text-align:left}
+  .hhead{display:flex;justify-content:space-between;align-items:center}
+  .hhead h3{font-family:var(--display);font-size:22px;color:var(--ember)}
+  .hclose{border:none;background:rgba(43,10,32,.12);width:36px;height:36px;border-radius:12px;font-size:16px;cursor:pointer;color:var(--ink);transition:transform .12s}
+  .hclose:hover{transform:scale(1.12) rotate(8deg)}
+  .tclose{position:absolute;top:12px;right:12px}
+  .hbest{margin-top:8px;font-weight:800;color:var(--flame)}
+  .hlist{margin-top:12px;max-height:320px;overflow:auto;display:flex;flex-direction:column;gap:8px;padding-right:4px}
+  .hempty{font-weight:600;opacity:.8;line-height:1.5}
+  .hrow{background:rgba(43,10,32,.07);border:2px solid rgba(43,10,32,.12);border-radius:14px;padding:10px 12px}
+  .hrow .hd{display:flex;justify-content:space-between;align-items:center;font-family:var(--display);font-weight:600;gap:8px}
+  .hrow .hm{font-size:13px;font-weight:700;opacity:.85;margin-top:3px}
+  .fb{font-size:11px;font-weight:800;padding:3px 9px;border-radius:99px;background:rgba(43,10,32,.1);white-space:nowrap}
+  .fb.up{background:rgba(255,210,63,.55)}
+  .hbar{height:8px;background:rgba(43,10,32,.14);border-radius:99px;margin-top:8px;overflow:hidden}
+  .hbar i{display:block;height:100%;background:linear-gradient(90deg,var(--flame),var(--gold))}
+
+  #shout{
+    position:fixed;left:50%;top:36%;transform:translate(-50%,-50%);z-index:100;pointer-events:none;
+    font-family:var(--display);font-weight:700;font-size:clamp(35px,10vw,75px);color:var(--cream);
+    text-shadow:0 0 30px rgba(255,149,5,.95), 0 7px 0 var(--ember); opacity:0;white-space:nowrap;
+  }
+  #shout.go{animation:shout 1s cubic-bezier(.2,1.7,.3,1)}
+  @keyframes shout{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-10deg)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.25) rotate(4deg)}70%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-95%) scale(1.05)}}
+  .shake{animation:shake .55s}
+  @keyframes shake{0%,100%{transform:translate(0)}15%{transform:translate(-8px,4px) rotate(-.5deg)}35%{transform:translate(8px,-4px) rotate(.5deg)}55%{transform:translate(-6px,-3px)}75%{transform:translate(6px,3px)}}
+  :focus-visible{outline:3px solid var(--cream);outline-offset:2px}
+  .tcard :focus-visible{outline-color:var(--ember)}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body data-band="sunset">
+<canvas id="embers"></canvas>
+<canvas id="confetti"></canvas>
+<div id="flash"></div>
+<div id="shout"></div>
+
+<!-- TUTORIAL -->
+<div id="tut" class="tut hidden" role="dialog" aria-modal="true">
+  <div class="tcard">
+    <button class="hclose tclose" id="tClose" aria-label="Close">✕</button>
+    <div class="tmoji" id="tmoji">👆</div>
+    <h3 id="tH"></h3>
+    <p id="tB"></p>
+    <div class="tdots" id="tDots"><i></i><i></i><i></i><i></i></div>
+    <div class="trow">
+      <button class="tskip" id="tSkip"></button>
+      <button class="tnext" id="tNext"></button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div id="hist" class="tut hidden" role="dialog" aria-modal="true">
+  <div class="tcard hcard">
+    <div class="hhead"><h3 id="hTitle"></h3><button class="hclose" id="hClose" aria-label="Close">✕</button></div>
+    <p class="hbest" id="hBest"></p>
+    <div class="hlist" id="hList"></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="topbar">
+    <div class="langs" id="langs"></div>
+    <button class="iconb" id="histBtn" aria-label="History">📅</button>
+    <button class="iconb" id="sndBtn" aria-label="Sound">🔊</button>
+    <button class="iconb" id="helpBtn" aria-label="Tutorial">❓</button>
+  </div>
+
+  <!-- HOME -->
+  <section id="setup">
+    <div class="hero">
+      <svg class="mascot" id="mascot" viewBox="0 0 120 120" role="img" aria-label="Sun with a little moon buddy orbiting it">
+        <defs>
+          <radialGradient id="mBody" cx=".38" cy=".32" r="1">
+            <stop offset="0" stop-color="#FFFDF4"/><stop offset=".65" stop-color="#FFF1CE"/><stop offset="1" stop-color="#F3DFAE"/>
+          </radialGradient>
+          <radialGradient id="mGlow">
+            <stop offset="0" stop-color="#FFF4DA" stop-opacity=".55"/><stop offset=".6" stop-color="#FFF4DA" stop-opacity=".2"/><stop offset="1" stop-color="#FFF4DA" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <g id="mrays" style="transform-origin:60px 60px;animation:spin 14s linear infinite">
+          <g fill="#FFD23F">
+            <rect x="56" y="4" width="8" height="112"/><rect x="56" y="4" width="8" height="112" transform="rotate(45 60 60)"/>
+            <rect x="56" y="4" width="8" height="112" transform="rotate(90 60 60)"/><rect x="56" y="4" width="8" height="112" transform="rotate(135 60 60)"/>
+            <rect x="56" y="4" width="8" height="112" transform="rotate(22 60 60)"/><rect x="56" y="4" width="8" height="112" transform="rotate(67 60 60)"/>
+            <rect x="56" y="4" width="8" height="112" transform="rotate(112 60 60)"/><rect x="56" y="4" width="8" height="112" transform="rotate(157 60 60)"/>
+          </g>
+        </g>
+        <circle id="mglow" cx="60" cy="60" r="52" fill="url(#mGlow)" style="display:none"/>
+        <circle id="mface" cx="60" cy="60" r="36" fill="#FFD23F" stroke="#FFF4DA" stroke-width="3"/>
+        <g id="mcraters" style="display:none" fill="#EBD9AF" opacity=".55">
+          <circle cx="78" cy="44" r="6"/><circle cx="42" cy="42" r="4"/><circle cx="80" cy="72" r="4"/>
+        </g>
+        <circle cx="48" cy="54" r="5" fill="#2B0A20"/><circle cx="72" cy="54" r="5" fill="#2B0A20"/>
+        <path d="M46 70 q14 14 28 0" stroke="#2B0A20" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <g id="mblush" fill="#F25C05" opacity=".5">
+          <circle cx="40" cy="70" r="5"/><circle cx="80" cy="70" r="5"/>
+        </g>
+        <g id="orbit">
+          <circle id="mbGlow" cx="60" cy="10" r="13" fill="#FFF4DA" opacity=".3"/>
+          <circle id="mbuddy" cx="60" cy="10" r="9" fill="#FFF6E3"/>
+          <circle id="mbcr" cx="63" cy="8" r="2.5" fill="#EBD9AF" opacity=".7"/>
+        </g>
+      </svg>
+      <h1 id="title"></h1>
+      <p class="sub" id="subTxt"></p>
+    </div>
+
+    <div class="card">
+      <span class="lbl" id="pickLbl"></span>
+      <div class="chips" id="chips"></div>
+      <div class="row">
+        <input type="text" id="newName" maxlength="28">
+        <input type="number" id="newMins" value="5" min="1" max="120" aria-label="Minutes">
+        <button class="ghost" id="addBtn"></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="lbl"><span id="startTxt"></span> <em class="tag" id="bandTag"></em></span>
+      <div class="times">
+        <label class="tlab"><span id="fromTxt"></span><input type="time" id="startTime" value="16:00"></label>
+        <span class="arrow">➜</span>
+        <label class="tlab"><span id="toTxt"></span><input type="time" id="endTime" value="17:00"></label>
+      </div>
+      <div class="budget" id="budget"></div>
+    </div>
+
+    <button class="go" id="makeBtn" disabled></button>
+  </section>
+
+  <!-- BOARD -->
+  <section id="board" class="hidden">
+    <h1 id="boardTitle"></h1>
+    <p class="deadsub" id="deadSub"></p>
+    <div class="horizon">
+      <svg viewBox="0 0 660 170" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="skyFrom" x1="0" y1="0" x2="0" y2="1">
+            <stop class="f0" offset="0" stop-color="#2B0A20"/><stop class="f1" offset=".55" stop-color="#C81D25"/><stop class="f2" offset="1" stop-color="#F25C05"/>
+          </linearGradient>
+          <linearGradient id="skyTo" x1="0" y1="0" x2="0" y2="1">
+            <stop class="t0" offset="0" stop-color="#F25C05"/><stop class="t1" offset=".5" stop-color="#FF9505"/><stop class="t2" offset="1" stop-color="#FFD23F"/>
+          </linearGradient>
+          <radialGradient id="moonBody" cx=".38" cy=".32" r="1">
+            <stop offset="0" stop-color="#FFFDF4"/><stop offset=".65" stop-color="#FFF1CE"/><stop offset="1" stop-color="#F3DFAE"/>
+          </radialGradient>
+          <radialGradient id="moonGlow">
+            <stop offset="0" stop-color="#FFF4DA" stop-opacity=".5"/><stop offset=".55" stop-color="#FFF4DA" stop-opacity=".18"/><stop offset="1" stop-color="#FFF4DA" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="660" height="170" fill="url(#skyFrom)"/>
+        <rect id="dawn" width="660" height="170" fill="url(#skyTo)" opacity="0"/>
+        <g id="stars" style="opacity:0"></g>
+        <g class="cloud"><ellipse cx="0" cy="42" rx="40" ry="12" fill="#FFF4DA"/><ellipse cx="28" cy="46" rx="30" ry="10" fill="#FFF4DA"/></g>
+        <g class="cloud b"><ellipse cx="0" cy="80" rx="52" ry="13" fill="#FFF4DA"/><ellipse cx="-30" cy="84" rx="34" ry="10" fill="#FFF4DA"/></g>
+
+        <!-- THE MOON: soft glow, no hard edges, sleepy smile -->
+        <g id="moonGroup">
+          <circle cx="330" cy="150" r="80" fill="url(#moonGlow)"/>
+          <circle cx="330" cy="150" r="42" fill="url(#moonBody)"/>
+          <g fill="#EBD9AF" opacity=".5">
+            <circle cx="350" cy="128" r="5"/><circle cx="306" cy="126" r="3.5"/><circle cx="352" cy="160" r="4"/>
+          </g>
+          <path d="M306 141 q7 6 14 0" stroke="#2B0A20" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M340 141 q7 6 14 0" stroke="#2B0A20" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M318 156 q12 11 24 0" stroke="#2B0A20" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <g fill="#FFC49B" opacity=".55">
+            <circle cx="304" cy="157" r="5"/><circle cx="356" cy="157" r="5"/>
+          </g>
+        </g>
+
+        <g id="sunGroup">
+          <g id="rays" opacity=".55"><g fill="#FFD23F">
+            <rect x="326" y="60" width="8" height="180"/><rect x="326" y="60" width="8" height="180" transform="rotate(45 330 150)"/>
+            <rect x="326" y="60" width="8" height="180" transform="rotate(90 330 150)"/><rect x="326" y="60" width="8" height="180" transform="rotate(135 330 150)"/>
+            <rect x="326" y="60" width="8" height="180" transform="rotate(22 330 150)"/><rect x="326" y="60" width="8" height="180" transform="rotate(67 330 150)"/>
+            <rect x="326" y="60" width="8" height="180" transform="rotate(112 330 150)"/><rect x="326" y="60" width="8" height="180" transform="rotate(157 330 150)"/>
+          </g></g>
+          <circle cx="330" cy="150" r="66" fill="#FFD23F" opacity=".3"/>
+          <circle cx="330" cy="150" r="46" fill="#FFD23F" stroke="#FFF4DA" stroke-width="3"/>
+          <circle cx="318" cy="142" r="5" fill="#2B0A20"/><circle cx="342" cy="142" r="5" fill="#2B0A20"/>
+          <path d="M316 158 q14 14 28 0" stroke="#2B0A20" stroke-width="4" fill="none" stroke-linecap="round"/>
+        </g>
+
+        <rect y="146" width="660" height="24" fill="#F25C05"/>
+      </svg>
+      <div class="status" id="status"></div>
+      <div class="bar"><i id="barFill"></i></div>
+    </div>
+
+    <ul id="list"></ul>
+
+    <div class="free hidden" id="free">
+      <h2 id="freeTitle"></h2>
+      <p id="freeMsg"></p>
+      <button class="again" id="againBtn"></button>
+    </div>
+
+    <button class="go" id="resetBtn" style="margin-top:24px"></button>
+  </section>
+</main>
+
+<script>
+/* ================= LANGUAGES ================= */
+const LANGS={
+en:{flag:"🇺🇸",label:"EN",
+ chores:["Make my bed","Load the dishes","Tidy my room","Homework","Take out the trash","Feed the pet","Fold laundry","Vacuum","Wipe the table","Pack my bag"],
+ shouts:["SKADOOSH!","BOOM!","NAILED IT!","TOO EASY!","ZOOM!","KAPOW!","CRUSHED IT!","BAM!","LEGEND!"],
+ t:{title:"Chores first. Then it's all yours.",
+ sub:"Tap the chores you've got today. Squeeze the minutes. The faster the plan, the sooner you're out the door.",
+ pick:"Pick your chores",addPh:"Add your own chore",add:"Add it",start:"Time window",from:"Start",to:"Finish by",
+ make:"Make my schedule",again:"MORE CONFETTI 🎊",plan:"Plan another day",min:"min",mS:"m",more:"More time",less:"Less time",mark:"Mark done:",
+ win:"{w} min window",sum:"{c} min of chores",spareS:"{m} min to spare 🎉",exactS:"exactly on time!",overS:"{m} min too many! ✂️",
+ finishBy:"Finish by",done:"{x} of {y} done",
+ bt:"{n} minutes of chores.<br>Then you're free at {t}.",
+ btN:"{n} minutes of chores.<br>Then the moon takes over at {t}.",
+ freeT:"FREE TIME! GO PLAY! 🎉",freeM:"Every chore checked off. The rest of the day belongs to you.",
+ letsgo:"LET'S GOOO!",freetime:"FREE TIME!!!",party:["SKADOOSH!","YESSS!","CHORES = DEAD","GO PLAY!"],
+ bands:{morning:"🌅 Sunrise shift",day:"☀️ Full-sun mode",sunset:"🌇 Golden hour",night:"🌙 Night mission"},
+ wins:{morning:"Sun's up, moon's asleep. You did it.",day:"Blazing. You did it.",sunset:"Sun's up. You did it.",night:"Moon's up, sun's in bed. You did it."},
+ combo:"COMBO x{n}!",tSkip:"Skip",tNext:"Next",tGo:"Let's go!",
+ hist:"My days",histEmpty:"No days yet! Finish all your chores to save your first one.",
+ best:"⚡ Best day: {m} min",rowT:"{n} chores · planned {p}m → real {a}m",fasterS:"⚡ faster",slowerS:"🐢 slower",
+ steps:[{h:"Pick your chores",b:"Tap the cards you need to do today. Hit + and − to set the minutes for each one."},
+ {h:"Set your time window",b:"Pick a start AND a finish-by time. Watch the sky change — night brings the moon!"},
+ {h:"Get your schedule",b:"Every chore gets a clock time. Shortest first — quick wins to build speed!"},
+ {h:"Check them off",b:"Confetti for every chore, and your day gets saved to 📅 so you can watch yourself get faster!"}]}},
+es:{flag:"🇪🇸",label:"ES",
+ chores:["Hacer mi cama","Poner los platos","Ordenar mi cuarto","Tarea","Sacar la basura","Dar de comer a la mascota","Doblar la ropa","Pasar la aspiradora","Limpiar la mesa","Preparar mi mochila"],
+ shouts:["¡SKADOOSH!","¡BUM!","¡GENIAL!","¡FACILÍSIMO!","¡ZAS!","¡PUM!","¡CRACK!","¡BRAVO!"],
+ t:{title:"Primero las tareas. Luego, ¡todo tuyo!",
+ sub:"Toca las tareas de hoy y ajusta los minutos. ¡Cuanto más rápido el plan, antes sales a jugar!",
+ pick:"Elige tus tareas",addPh:"Añade tu propia tarea",add:"Añadir",start:"Ventana de tiempo",from:"Inicio",to:"Terminar antes de",
+ make:"Crear mi horario",again:"¡MÁS CONFETI! 🎊",plan:"Planear otro día",min:"min",mS:"m",more:"Más tiempo",less:"Menos tiempo",mark:"Marcar:",
+ win:"ventana de {w} min",sum:"{c} min de tareas",spareS:"¡{m} min de sobra 🎉!",exactS:"¡justo a tiempo!",overS:"¡{m} min de más! ✂️",
+ finishBy:"Termina antes de",done:"{x} de {y} listas",
+ bt:"{n} minutos de tareas.<br>Después, ¡libre a las {t}!",
+ btN:"{n} minutos de tareas.<br>Después, ¡la luna manda a las {t}!",
+ freeT:"¡TIEMPO LIBRE! ¡A JUGAR! 🎉",freeM:"Todas las tareas listas. ¡El resto del día es tuyo!",
+ letsgo:"¡VAMOOOS!",freetime:"¡TIEMPO LIBRE!",party:["¡SKADOOSH!","¡SÍÍÍ!","TAREAS = KO","¡A JUGAR!"],
+ bands:{morning:"🌅 Turno del amanecer",day:"☀️ Pleno sol",sunset:"🌇 Hora dorada",night:"🌙 Misión nocturna"},
+ wins:{morning:"Salió el sol, la luna a dormir. ¡Lo lograste!",day:"¡Brillante! Lo lograste.",sunset:"El sol arriba. ¡Lo lograste!",night:"La luna arriba, el sol a la cama. ¡Lo lograste!"},
+ combo:"¡COMBO x{n}!",tSkip:"Saltar",tNext:"Siguiente",tGo:"¡Vamos!",
+ hist:"Mis días",histEmpty:"¡Aún nada! Termina todas tus tareas para guardar tu primer día.",
+ best:"⚡ Mejor día: {m} min",rowT:"{n} tareas · plan {p}m → real {a}m",fasterS:"⚡ más rápido",slowerS:"🐢 más lento",
+ steps:[{h:"Elige tus tareas",b:"Toca las tarjetas de hoy. Usa + y − para poner los minutos."},
+ {h:"Elige tu ventana de tiempo",b:"Pon hora de inicio Y de final. ¡El cielo cambia — de noche llega la luna!"},
+ {h:"Recibe tu horario",b:"Cada tarea tiene su hora. Las más cortas van primero: ¡victorias rápidas!"},
+ {h:"Márcalas al terminar",b:"¡Confeti por cada una, y tu día se guarda en 📅 para ver cómo mejoras!"}]}},
+fr:{flag:"🇫🇷",label:"FR",
+ chores:["Faire mon lit","Ranger la vaisselle","Ranger ma chambre","Devoirs","Sortir la poubelle","Nourrir l'animal","Plier le linge","Passer l'aspirateur","Essuyer la table","Préparer mon sac"],
+ shouts:["SKADOOSH !","BOUM !","PAF !","TROP FACILE !","GÉNIAL !","ZOU !","BRAVO !"],
+ t:{title:"Les corvées d'abord. Après, c'est à toi !",
+ sub:"Touche les corvées du jour et règle les minutes. Plus le plan est rapide, plus vite tu sors jouer !",
+ pick:"Choisis tes corvées",addPh:"Ajoute ta propre corvée",add:"Ajouter",start:"Fenêtre de temps",from:"Début",to:"Finir avant",
+ make:"Créer mon planning",again:"ENCORE DES CONFETTIS ! 🎊",plan:"Planifier un autre jour",min:"min",mS:"m",more:"Plus de temps",less:"Moins de temps",mark:"Cocher :",
+ win:"fenêtre de {w} min",sum:"{c} min de corvées",spareS:"{m} min d'avance 🎉",exactS:"pile à l'heure !",overS:"{m} min de trop ! ✂️",
+ finishBy:"À finir avant",done:"{x} sur {y} faites",
+ bt:"{n} minutes de corvées.<br>Ensuite, libre à {t} !",
+ btN:"{n} minutes de corvées.<br>Ensuite, la lune prend le relais à {t} !",
+ freeT:"TEMPS LIBRE ! VA JOUER ! 🎉",freeM:"Toutes les corvées cochées. Le reste de la journée est à toi !",
+ letsgo:"C'EST PARTIII !",freetime:"TEMPS LIBRE !!!",party:["SKADOOSH !","OUAIS !","CORVÉES = K.O.","VA JOUER !"],
+ bands:{morning:"🌅 Équipe de l'aube",day:"☀️ Plein soleil",sunset:"🌇 Heure dorée",night:"🌙 Mission de nuit"},
+ wins:{morning:"Soleil levé, lune endormie. Bravo !",day:"Éclatant ! Bravo !",sunset:"Soleil au sommet. Bravo !",night:"Lune levée, soleil au lit. Bravo !"},
+ combo:"COMBO x{n} !",tSkip:"Passer",tNext:"Suivant",tGo:"C'est parti !",
+ hist:"Mes journées",histEmpty:"Rien pour l'instant ! Finis toutes tes corvées pour enregistrer ta première journée.",
+ best:"⚡ Meilleur jour : {m} min",rowT:"{n} corvées · prévu {p}m → réel {a}m",fasterS:"⚡ plus rapide",slowerS:"🐢 plus lent",
+ steps:[{h:"Choisis tes corvées",b:"Touche les cartes du jour. Utilise + et − pour régler les minutes."},
+ {h:"Choisis ta fenêtre de temps",b:"Une heure de début ET une heure de fin. Le ciel change — la nuit, la lune arrive !"},
+ {h:"Reçois ton planning",b:"Chaque corvée a son heure. Les plus courtes d'abord : victoires rapides !"},
+ {h:"Coche-les",b:"Des confettis pour chacune, et ta journée est gardée dans 📅 pour voir tes progrès !"}]}},
+de:{flag:"🇩🇪",label:"DE",
+ chores:["Bett machen","Geschirr einräumen","Zimmer aufräumen","Hausaufgaben","Müll rausbringen","Haustier füttern","Wäsche falten","Staubsaugen","Tisch abwischen","Tasche packen"],
+ shouts:["SKADOOSH!","ZACK!","BUMM!","GESCHAFFT!","SUPER!","WOW!","STARK!"],
+ t:{title:"Erst die Aufgaben. Dann gehört dir der Tag!",
+ sub:"Tippe deine Aufgaben an und stelle die Minuten ein. Je schneller der Plan, desto eher bist du draußen!",
+ pick:"Wähle deine Aufgaben",addPh:"Eigene Aufgabe hinzufügen",add:"Hinzufügen",start:"Zeitfenster",from:"Start",to:"Fertig bis",
+ make:"Meinen Plan erstellen",again:"MEHR KONFETTI! 🎊",plan:"Neuen Tag planen",min:"Min",mS:"m",more:"Mehr Zeit",less:"Weniger Zeit",mark:"Abhaken:",
+ win:"{w} Min Fenster",sum:"{c} Min Aufgaben",spareS:"{m} Min übrig 🎉",exactS:"genau pünktlich!",overS:"{m} Min zu viel! ✂️",
+ finishBy:"Fertig bis",done:"{x} von {y} erledigt",
+ bt:"{n} Minuten Aufgaben.<br>Danach bist du frei um {t}!",
+ btN:"{n} Minuten Aufgaben.<br>Danach übernimmt der Mond um {t}!",
+ freeT:"FREIZEIT! GEH SPIELEN! 🎉",freeM:"Alle Aufgaben abgehakt. Der Rest des Tages gehört dir!",
+ letsgo:"LOS GEHT'S!",freetime:"FREIZEIT!!!",party:["SKADOOSH!","JAAA!","AUFGABEN = K.O.","GEH SPIELEN!"],
+ bands:{morning:"🌅 Sonnenaufgang",day:"☀️ Volle Sonne",sunset:"🌇 Goldene Stunde",night:"🌙 Nachtmission"},
+ wins:{morning:"Sonne oben, Mond schläft. Geschafft!",day:"Strahlend! Geschafft!",sunset:"Sonne oben. Geschafft!",night:"Mond oben, Sonne im Bett. Geschafft!"},
+ combo:"COMBO x{n}!",tSkip:"Überspringen",tNext:"Weiter",tGo:"Los geht's!",
+ hist:"Meine Tage",histEmpty:"Noch nichts! Erledige alle Aufgaben, um deinen ersten Tag zu speichern.",
+ best:"⚡ Bester Tag: {m} Min",rowT:"{n} Aufgaben · geplant {p}m → echt {a}m",fasterS:"⚡ schneller",slowerS:"🐢 langsamer",
+ steps:[{h:"Wähle deine Aufgaben",b:"Tippe die Karten für heute an. Mit + und − stellst du die Minuten ein."},
+ {h:"Wähle dein Zeitfenster",b:"Startzeit UND Endzeit. Der Himmel ändert sich — nachts kommt der Mond!"},
+ {h:"Hol dir deinen Plan",b:"Jede Aufgabe bekommt ihre Uhrzeit. Die kürzesten zuerst – schnelle Siege!"},
+ {h:"Hake sie ab",b:"Konfetti für jede Aufgabe, und dein Tag landet in 📅 – so siehst du, wie du schneller wirst!"}]}},
+zh:{flag:"🇨🇳",label:"中文",
+ chores:["整理床铺","收拾碗筷","收拾房间","写作业","倒垃圾","喂宠物","叠衣服","吸地","擦桌子","收书包"],
+ shouts:["SKADOOSH!","太棒了！","搞定！","轰！","厉害！","冲鸭！","真牛！"],
+ t:{title:"先做家务，然后时间全归你！",
+ sub:"点选今天的家务，调好分钟数。计划越快，出去玩得越早！",
+ pick:"选择你的家务",addPh:"添加自己的家务",add:"添加",start:"时间窗口",from:"开始",to:"截止",
+ make:"生成我的日程",again:"再来点彩带！🎊",plan:"再计划一天",min:"分钟",mS:"分",more:"加时间",less:"减时间",mark:"完成：",
+ win:"时间窗 {w} 分钟",sum:"家务 {c} 分钟",spareS:"多出 {m} 分钟 🎉",exactS:"刚刚好！",overS:"超了 {m} 分钟！✂️",
+ finishBy:"截止",done:"已完成 {x}/{y}",
+ bt:"家务共 {n} 分钟。<br>{t} 你就自由啦！",
+ btN:"家务共 {n} 分钟。<br>{t} 月亮就接班啦！",
+ freeT:"自由时间！去玩吧！🎉",freeM:"所有家务搞定，剩下的时间都是你的！",
+ letsgo:"冲呀！！",freetime:"自由时间！！！",party:["SKADOOSH!","耶！！","家务=清零","去玩吧！"],
+ bands:{morning:"🌅 日出模式",day:"☀️ 烈日模式",sunset:"🌇 黄金时刻",night:"🌙 夜间任务"},
+ wins:{morning:"太阳升起，月亮睡了。你做到了！",day:"阳光满满！你做到了！",sunset:"太阳升起。你做到了！",night:"月亮升起，太阳睡觉。你做到了！"},
+ combo:"连击 x{n}！",tSkip:"跳过",tNext:"下一步",tGo:"开始吧！",
+ hist:"我的记录",histEmpty:"还没有记录！完成所有家务就能保存第一天。",
+ best:"⚡ 最快：{m} 分钟",rowT:"{n}项 · 计划{p}分 → 实际{a}分",fasterS:"⚡ 更快了",slowerS:"🐢 慢了点",
+ steps:[{h:"选择你的家务",b:"点一点今天要做的卡片，用 + 和 − 调整分钟。"},
+ {h:"选时间窗口",b:"设置开始和截止时间。天空会变——选晚上，月亮就出场！"},
+ {h:"拿到你的日程",b:"每个家务都有自己的时间。短的排前面——先赢几局！"},
+ {h:"完成就打勾",b:"每个家务都有彩带，你的一天还会存进📅，看看自己越来越快！"}]}},
+hi:{flag:"🇮🇳",label:"हिं",
+ chores:["बिस्तर ठीक करना","बर्तन रखना","कमरा साफ़ करना","होमवर्क","कचरा फेंकना","पालतू को खाना देना","कपड़े तह करना","वैक्यूम करना","मेज़ पोंछना","बैग तैयार करना"],
+ shouts:["SKADOOSH!","धमाका!","वाह!","हो गया!","झकास!","शाबाश!","कमाल!"],
+ t:{title:"पहले काम, फिर सारा समय तुम्हारा!",
+ sub:"आज के काम चुनो और मिनट सेट करो। जितना तेज़ प्लान, उतनी जल्दी खेलने!",
+ pick:"अपने काम चुनो",addPh:"अपना काम जोड़ो",add:"जोड़ो",start:"समय विंडो",from:"शुरू",to:"इससे पहले",
+ make:"मेरा शेड्यूल बनाओ",again:"और कंफ़ेटी! 🎊",plan:"नया दिन प्लान करो",min:"मिनट",mS:"मि",more:"समय बढ़ाओ",less:"समय घटाओ",mark:"पूरा:",
+ win:"{w} मिनट की विंडो",sum:"{c} मिनट के काम",spareS:"{m} मिनट बचेंगे 🎉",exactS:"बिल्कुल टाइम पर!",overS:"{m} मिनट ज़्यादा! ✂️",
+ finishBy:"इससे पहले ख़त्म",done:"{y} में से {x} पूरे",
+ bt:"{n} मिनट के काम।<br>फिर {t} बजे आज़ादी!",
+ btN:"{n} मिनट के काम।<br>फिर {t} बजे चाँद की बारी!",
+ freeT:"फ्री टाइम! खेलने जाओ! 🎉",freeM:"सारे काम पूरे! बाक़ी दिन तुम्हारा है!",
+ letsgo:"चलोओओ!",freetime:"फ्री टाइम!!!",party:["SKADOOSH!","येऽऽ!","काम = ख़त्म","खेलने जाओ!"],
+ bands:{morning:"🌅 सुबह की पारी",day:"☀️ धूप मोड",sunset:"🌇 सुनहरा समय",night:"🌙 रात का मिशन"},
+ wins:{morning:"सूरज ऊपर, चाँद सो गया। कर दिखाया!",day:"चमकदार! कर दिखाया!",sunset:"सूरज ऊपर। कर दिखाया!",night:"चाँद ऊपर, सूरज सो गया। कर दिखाया!"},
+ combo:"कॉम्बो x{n}!",tSkip:"छोड़ो",tNext:"आगे",tGo:"चलो!",
+ hist:"मेरे दिन",histEmpty:"अभी कुछ नहीं! सारे काम पूरे करो, पहला दिन सेव होगा।",
+ best:"⚡ बेस्ट: {m} मिनट",rowT:"{n} काम · प्लान {p}मि → असली {a}मि",fasterS:"⚡ और तेज़",slowerS:"🐢 थोड़ा धीमा",
+ steps:[{h:"अपने काम चुनो",b:"आज के कार्ड टैप करो। + और − से मिनट सेट करो।"},
+ {h:"समय विंडो चुनो",b:"शुरू और ख़त्म का समय सेट करो। आसमान बदलता है — रात में चाँद आता है!"},
+ {h:"अपना शेड्यूल पाओ",b:"हर काम का अपना समय। छोटे पहले — झटपट जीत!"},
+ {h:"पूरा करके टिक लगाओ",b:"हर काम पर कंफ़ेटी, और तुम्हारा दिन 📅 में सेव होगा — देखो कितने तेज़ हो रहे हो!"}]}}
+};
+let lang="en";
+const L=()=>LANGS[lang];
+const LOCALE={en:"en-US",es:"es",fr:"fr",de:"de",zh:"zh-CN",hi:"hi"};
+const BAND_EMOJI={morning:"🌅",day:"☀️",sunset:"🌇",night:"🌙"};
+
+/* ================= SKY BANDS ================= */
+const BANDS={
+  morning:{from:["#2B0A20","#C81D25","#F25C05"], to:["#F25C05","#FF9505","#FFD23F"], moon:false, stars:"out", ember:"#FFD23F"},
+  day:{from:["#C2410C","#FF8A00","#FFD23F"], to:["#FF9505","#FFD23F","#FFF0B3"], moon:false, stars:"none", ember:"#F25C05"},
+  sunset:{from:["#3B0D2E","#C81D25","#F25C05"], to:["#C81D25","#F25C05","#FFD23F"], moon:false, stars:"none", ember:"#FFD23F"},
+  night:{from:["#3B0D2E","#C81D25","#F25C05"], to:["#0B0313","#22081F","#3B0D2E"], moon:true, stars:"in", ember:"#FFF4DA"}
+};
+let band="sunset", emberColor="#FFD23F";
+const bandFor=mins=>{const h=(mins%1440)/60; if(h>=5&&h<11)return"morning"; if(h>=11&&h<16)return"day"; if(h>=16&&h<20)return"sunset"; return"night";};
+
+let chores=Array.from({length:10},(_,i)=>({k:i,mins:[3,8,10,20,3,4,8,8,3,4][i],on:false}));
+let plan=[], deadlineAbs=0, planStartedAt=0;
+const $=id=>document.getElementById(id);
+const chipsEl=$("chips"), listEl=$("list");
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const fmt=m=>{const h=Math.floor(m/60)%24,mm=m%60,ap=h>=12?"PM":"AM";return `${h%12||12}:${String(mm).padStart(2,"0")} ${ap}`;};
+const nameOf=c=>c.k!=null?L().chores[c.k]:c.name;
+
+/* ================= HISTORY (saved days) ================= */
+let hist=[];
+(async()=>{
+  try{
+    if(window.storage){
+      const r=await window.storage.get("sunrise-history");
+      if(r&&r.value) hist=JSON.parse(r.value);
+    }
+  }catch(e){/* first visit or storage unavailable — start fresh */}
+})();
+async function saveHist(){
+  try{ if(window.storage) await window.storage.set("sunrise-history",JSON.stringify(hist.slice(0,60))); }catch(e){}
+}
+function renderHist(){
+  const T=L().t;
+  $("hTitle").textContent="📅 "+T.hist;
+  if(!hist.length){ $("hBest").textContent=""; $("hList").innerHTML=`<p class="hempty">${T.histEmpty}</p>`; return; }
+  $("hBest").textContent=T.best.replace("{m}",Math.min(...hist.map(h=>h.a)));
+  $("hList").innerHTML="";
+  hist.forEach((h,i)=>{
+    const prev=hist[i+1];
+    const badge = prev ? (h.a<prev.a?`<span class="fb up">${T.fasterS}</span>`:h.a>prev.a?`<span class="fb">${T.slowerS}</span>`:"") : "";
+    const date=new Date(h.d).toLocaleDateString(LOCALE[lang],{month:"short",day:"numeric"});
+    const pct=Math.min(100,Math.round(h.a/h.p*100));
+    const row=document.createElement("div"); row.className="hrow";
+    row.innerHTML=`<div class="hd"><span>${BAND_EMOJI[h.b]||"🌇"} ${date}</span>${badge}</div>
+      <div class="hm">${T.rowT.replace("{n}",h.n).replace("{p}",h.p).replace("{a}",h.a)}</div>
+      <div class="hbar"><i style="width:${pct}%;${h.a>h.p?"background:var(--ember)":""}"></i></div>`;
+    $("hList").appendChild(row);
+  });
+}
+$("histBtn").onclick=()=>{ clickSnd(); renderHist(); $("hist").classList.remove("hidden"); };
+$("hClose").onclick=()=>{ clickSnd(); $("hist").classList.add("hidden"); };
+
+/* ================= SOUND ================= */
+let audioCtx=null, soundOn=true;
+function beep(f,d,type="square",vol=.14,when=0){
+  if(!soundOn) return;
+  try{
+    audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+    const t=audioCtx.currentTime+when, o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type=type; o.frequency.value=f;
+    g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.001,t+d);
+    o.connect(g).connect(audioCtx.destination); o.start(t); o.stop(t+d+.02);
+  }catch(e){}
+}
+function clickSnd(){beep(340,.05,"sine",.09)}
+function popSnd(c=1){beep(440+c*70,.08); beep(700+c*70,.12,"square",.11,.05)}
+function tadaSnd(){[523,659,784,1047].forEach((f,i)=>beep(f,.3,"triangle",.15,i*.11))}
+$("sndBtn").onclick=()=>{ soundOn=!soundOn; $("sndBtn").textContent=soundOn?"🔊":"🔇"; if(soundOn) clickSnd(); };
+
+/* ================= LANGUAGE UI ================= */
+Object.keys(LANGS).forEach(k=>{
+  const b=document.createElement("button");
+  b.className="pill"; b.dataset.l=k; b.textContent=LANGS[k].flag+" "+LANGS[k].label;
+  b.onclick=e=>{ if(lang!==k){ applyLang(k); clickSnd(); sparkle(e.clientX,e.clientY,22); } };
+  $("langs").appendChild(b);
+});
+
+function buildTitle(text){
+  const el=$("title"); el.innerHTML="";
+  const units = lang==="hi" ? text.split(/(\s+)/) : Array.from(text);
+  units.forEach((u,i)=>{
+    const s=document.createElement("span"); s.className="w";
+    s.textContent=/^\s+$/.test(u)?"\u00A0":u;
+    s.style.animationDelay=(i*55)+"ms";
+    el.appendChild(s);
+  });
+}
+
+function applyLang(l){
+  lang=l; const T=L().t;
+  document.documentElement.lang=l;
+  document.querySelectorAll(".pill").forEach(p=>p.classList.toggle("on",p.dataset.l===l));
+  buildTitle(T.title);
+  $("subTxt").textContent=T.sub;
+  $("pickLbl").textContent=T.pick;
+  $("newName").placeholder=T.addPh;
+  $("addBtn").textContent=T.add;
+  $("startTxt").textContent=T.start;
+  $("fromTxt").textContent=T.from;
+  $("toTxt").textContent=T.to;
+  $("makeBtn").textContent=T.make;
+  $("resetBtn").textContent=T.plan;
+  $("againBtn").textContent=T.again;
+  $("freeTitle").textContent=T.freeT;
+  if(!$("free").classList.contains("hidden")) $("freeMsg").textContent=T.freeM;
+  applyBand(band);
+  renderChips();
+  if(plan.length){ updateBoardTitle(); renderBoard(); }
+  renderTut();
+  if(!$("hist").classList.contains("hidden")) renderHist();
+}
+
+/* ================= SKY ================= */
+function applyBand(b){
+  band=b; const B=BANDS[b];
+  document.body.dataset.band=b;
+  $("bandTag").textContent=L().t.bands[b];
+  ["f0","f1","f2"].forEach((c,i)=>document.querySelector("."+c).setAttribute("stop-color",B.from[i]));
+  ["t0","t1","t2"].forEach((c,i)=>document.querySelector("."+c).setAttribute("stop-color",B.to[i]));
+  $("mface").setAttribute("fill",B.moon?"url(#mBody)":"#FFD23F");
+  $("mface").setAttribute("stroke",B.moon?"none":"#FFF4DA");
+  $("mglow").style.display=B.moon?"":"none";
+  $("mrays").style.display=B.moon?"none":"";
+  $("mcraters").style.display=B.moon?"":"none";
+  $("mblush").setAttribute("fill",B.moon?"#FFB98A":"#F25C05");
+  $("mbuddy").setAttribute("fill",B.moon?"#FFD23F":"#FFF6E3");
+  $("mbGlow").setAttribute("fill",B.moon?"#FFD23F":"#FFF4DA");
+  $("mbcr").style.display=B.moon?"none":"";
+  emberColor=B.ember;
+  positionSky(plan.length?plan.filter(c=>c.done).length/plan.length:0);
+}
+
+function positionSky(p){
+  const sway=Math.sin(p*Math.PI*2.2)*150;
+  const riser=BANDS[band].moon?$("moonGroup"):$("sunGroup");
+  const setter=BANDS[band].moon?$("sunGroup"):$("moonGroup");
+  riser.setAttribute("transform",`translate(${sway.toFixed(1)},${(-p*128).toFixed(1)}) rotate(${(p*14).toFixed(1)} 330 150)`);
+  if(BANDS[band].moon){
+    setter.setAttribute("transform",`translate(${(-sway*.4).toFixed(1)},${(-6+p*150).toFixed(1)}) rotate(${(-p*8).toFixed(1)} 330 150)`);
+  } else {
+    setter.setAttribute("transform",`translate(${(-sway*.8).toFixed(1)},${(-116+p*230).toFixed(1)}) rotate(${(-p*12).toFixed(1)} 330 150)`);
+  }
+  $("dawn").setAttribute("opacity",p.toFixed(2));
+  const s=BANDS[band].stars;
+  $("stars").style.opacity = s==="in" ? p.toFixed(2) : s==="out" ? (1-p).toFixed(2) : 0;
+}
+
+const starsG=$("stars");
+for(let i=0;i<18;i++){
+  const s=document.createElementNS("http://www.w3.org/2000/svg","circle");
+  s.setAttribute("cx",(15+Math.random()*630).toFixed(0));
+  s.setAttribute("cy",(8+Math.random()*72).toFixed(0));
+  s.setAttribute("r",(1+Math.random()*2.2).toFixed(1));
+  s.setAttribute("fill","#FFF4DA");
+  s.setAttribute("class","tw");
+  s.style.animationDelay=(Math.random()*2.2).toFixed(2)+"s";
+  starsG.appendChild(s);
+}
+
+/* ================= TIME WINDOW ================= */
+function windowMins(){
+  const [h1,m1]=$("startTime").value.split(":").map(Number);
+  const [h2,m2]=$("endTime").value.split(":").map(Number);
+  let s=h1*60+m1, e=h2*60+m2;
+  if(e<=s) e+=1440; /* crosses midnight — night missions allowed! */
+  return {s,e,w:e-s};
+}
+const sumSel=()=>chores.filter(c=>c.on).reduce((a,c)=>a+c.mins,0);
+function updateBudget(){
+  const T=L().t, {w}=windowMins(), c=sumSel(), d=w-c;
+  let tail = c===0 ? "" : d>0 ? " · "+T.spareS.replace("{m}",d) : d===0 ? " · "+T.exactS : " · "+T.overS.replace("{m}",-d);
+  $("budget").textContent=`⏱ ${T.win.replace("{w}",w)} · ${T.sum.replace("{c}",c)}${tail}`;
+  $("budget").classList.toggle("bad", d<0 && c>0);
+  $("makeBtn").disabled = !chores.some(x=>x.on) || d<0;
+}
+$("startTime").addEventListener("input",()=>{
+  const v=$("startTime").value; if(!v) return;
+  const [h,m]=v.split(":").map(Number);
+  const nb=bandFor(h*60+m);
+  if(nb!==band){ applyBand(nb); sparkle(innerWidth/2,innerHeight*.35,24); }
+  updateBudget();
+});
+$("endTime").addEventListener("input",updateBudget);
+
+/* ================= SETUP SCREEN ================= */
+function renderChips(){
+  const T=L().t;
+  chipsEl.innerHTML="";
+  chores.forEach(c=>{
+    const chip=document.createElement("div");
+    chip.className="chip"+(c.on?" on":"");
+    chip.innerHTML=`<span class="box">${c.on?"✓":""}</span><span class="name">${nameOf(c)}</span>
+      <span class="mins">
+        <button class="step plus" data-d="1" aria-label="${T.more}">+</button>
+        <span class="m">${c.mins} ${T.min}</span>
+        <button class="step minus" data-d="-1" aria-label="${T.less}">−</button>
+      </span>`;
+    chip.tabIndex=0;
+    chip.onclick=e=>{
+      const s=e.target.closest(".step");
+      if(s){ c.mins=Math.max(1,Math.min(120,c.mins+(+s.dataset.d))); clickSnd(); }
+      else { c.on=!c.on; c.pop=true; clickSnd(); if(c.on) sparkle(e.clientX,e.clientY,18); }
+      renderChips();
+    };
+    chip.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();c.on=!c.on;c.pop=true;renderChips();}};
+    if(c.pop){chip.classList.add("pop");c.pop=false;}
+    chipsEl.appendChild(chip);
+  });
+  updateBudget();
+}
+
+$("mascot").onclick=e=>{ sparkle(e.clientX,e.clientY,40); popSnd(2); shout(L().shouts[(Math.random()*L().shouts.length)|0]); };
+
+$("addBtn").onclick=e=>{
+  const n=$("newName").value.trim();
+  if(!n){$("newName").focus();return;}
+  chores.push({name:n,mins:Math.max(1,+$("newMins").value||5),on:true,pop:true});
+  $("newName").value=""; renderChips(); popSnd(); sparkle(e.clientX,e.clientY,26);
+};
+$("newName").onkeydown=e=>{if(e.key==="Enter")$("addBtn").click();};
+
+$("makeBtn").onclick=()=>{
+  const {s,e}=windowMins();
+  deadlineAbs=e; planStartedAt=Date.now();
+  applyBand(bandFor(s));
+  let t=s;
+  plan=chores.filter(c=>c.on).sort((a,b)=>a.mins-b.mins).map(c=>{
+    const it={...c,start:t,end:t+c.mins,done:false}; t+=c.mins; return it;
+  });
+  shout(L().t.letsgo); burst(120); tadaSnd();
+  $("setup").classList.add("hidden"); $("board").classList.remove("hidden");
+  updateBoardTitle();
+  renderBoard(); scrollTo(0,0);
+};
+
+function updateBoardTitle(){
+  if(!plan.length) return;
+  const T=L().t;
+  const total=plan.reduce((s,c)=>s+c.mins,0);
+  const end=plan[plan.length-1].end;
+  const tpl=BANDS[band].moon?T.btN:T.bt;
+  $("boardTitle").innerHTML=tpl.replace("{n}",total).replace("{t}",fmt(end));
+  const spare=deadlineAbs-end;
+  $("deadSub").textContent=`🏁 ${T.finishBy} ${fmt(deadlineAbs)} · ${spare>0?T.spareS.replace("{m}",spare):T.exactS}`;
+}
+
+/* ================= BOARD ================= */
+let lastCheck=0, combo=0;
+function renderBoard(zapIdx=-1){
+  const T=L().t;
+  listEl.innerHTML="";
+  const nextIdx=plan.findIndex(c=>!c.done);
+  plan.forEach((c,i)=>{
+    const li=document.createElement("li");
+    li.className=(c.done?"done":"")+(i===nextIdx?" now":"")+(i===zapIdx?" zap":"");
+    li.style.animationDelay=(i*60)+"ms";
+    li.innerHTML=`<span class="clock">${fmt(c.start)}</span><span class="task">${nameOf(c)}</span>
+      <span class="dur">${c.mins}${T.mS}</span>
+      <button class="tick" aria-label="${T.mark} ${nameOf(c)}">${c.done?"✓":""}</button>`;
+    li.querySelector(".tick").onclick=e=>{
+      c.done=!c.done;
+      if(c.done){
+        const now=Date.now();
+        combo = now-lastCheck<5000 ? combo+1 : 1; lastCheck=now;
+        sparkle(e.clientX,e.clientY,50); popSnd(combo);
+        if(combo>=2){ shout(T.combo.replace("{n}",combo)); burst(60+combo*35); }
+        else { shout(L().shouts[(Math.random()*L().shouts.length)|0]); burst(90); }
+      }
+      renderBoard(i);
+    };
+    listEl.appendChild(li);
+  });
+
+  const done=plan.filter(c=>c.done).length, p=done/plan.length;
+  $("status").textContent = done===plan.length ? T.wins[band] : T.done.replace("{x}",done).replace("{y}",plan.length);
+  $("barFill").style.width=(p*100)+"%";
+  positionSky(p);
+
+  const all=done===plan.length;
+  $("free").classList.toggle("hidden",!all);
+  if(all && !renderBoard.party){
+    renderBoard.party=true;
+    $("freeMsg").textContent=T.freeM;
+    if(!plan.saved){
+      plan.saved=true;
+      const actual=Math.max(1,Math.round((Date.now()-planStartedAt)/60000));
+      hist.unshift({d:new Date().toISOString(),n:plan.length,p:plan.reduce((s,c)=>s+c.mins,0),a:actual,b:band});
+      saveHist();
+    }
+    megaParty();
+  }
+  if(!all) renderBoard.party=false;
+}
+
+function megaParty(){
+  tadaSnd(); setTimeout(tadaSnd,700);
+  if(reduce) return;
+  $("flash").classList.remove("on"); void $("flash").offsetWidth; $("flash").classList.add("on");
+  document.body.classList.add("shake"); setTimeout(()=>document.body.classList.remove("shake"),560);
+  shout(L().t.freetime);
+  L().t.party.forEach((w,i)=>setTimeout(()=>shout(w), 1200+i*950));
+  let i=0;
+  const storm=setInterval(()=>{
+    cannon(0, innerHeight, 60, -Math.PI/3.2);
+    cannon(innerWidth, innerHeight, 60, -Math.PI+Math.PI/3.2);
+    burst(70);
+    sparkle(Math.random()*innerWidth, Math.random()*innerHeight*.6, 30);
+    if(++i>12) clearInterval(storm);
+  }, 480);
+  burst(400);
+}
+$("againBtn").onclick=e=>{ megaParty(); sparkle(e.clientX,e.clientY,60); };
+
+function shout(t){
+  if(reduce) return;
+  const s=$("shout"); s.textContent=t; s.classList.remove("go"); void s.offsetWidth; s.classList.add("go");
+}
+
+$("resetBtn").onclick=()=>{
+  chores=chores.map(c=>({...c,on:false})); plan=[]; renderBoard.party=false; combo=0;
+  $("board").classList.add("hidden"); $("setup").classList.remove("hidden");
+  $("free").classList.add("hidden"); renderChips(); scrollTo(0,0);
+};
+
+/* ================= TUTORIAL ================= */
+let tutStep=0;
+const TMOJI=["👆","🌗","🗓️","🎉"];
+function renderTut(){
+  const T=L().t, st=T.steps[tutStep];
+  $("tmoji").textContent=TMOJI[tutStep];
+  $("tH").textContent=st.h; $("tB").textContent=st.b;
+  $("tSkip").textContent=T.tSkip;
+  $("tNext").textContent = tutStep===T.steps.length-1 ? T.tGo : T.tNext;
+  [...$("tDots").children].forEach((d,i)=>d.classList.toggle("on",i===tutStep));
+}
+function openTut(){ tutStep=0; renderTut(); $("tut").classList.remove("hidden"); }
+function closeTut(){ $("tut").classList.add("hidden"); sparkle(innerWidth/2,innerHeight/2,40); markTutSeen(); }
+async function markTutSeen(){ try{ if(window.storage) await window.storage.set("sunrise-tut-seen","1"); }catch(e){} }
+$("tNext").onclick=()=>{
+  clickSnd();
+  if(tutStep>=L().t.steps.length-1){ closeTut(); popSnd(2); }
+  else { tutStep++; renderTut(); }
+};
+$("tSkip").onclick=()=>{ clickSnd(); closeTut(); };
+$("helpBtn").onclick=()=>{ clickSnd(); openTut(); };
+$("tClose").onclick=()=>{ clickSnd(); closeTut(); };
+$("tut").addEventListener("click",e=>{ if(e.target===$("tut")) closeTut(); });
+$("hist").addEventListener("click",e=>{ if(e.target===$("hist")) $("hist").classList.add("hidden"); });
+addEventListener("keydown",e=>{ if(e.key==="Escape"){ if(!$("tut").classList.contains("hidden")) closeTut(); $("hist").classList.add("hidden"); } });
+
+/* ================= PARTICLES ================= */
+const COLORS=["#FFD23F","#FF9505","#F25C05","#C81D25","#FFF4DA"];
+const cv=$("confetti"), ctx=cv.getContext("2d");
+const ev=$("embers"), ectx=ev.getContext("2d");
+let bits=[], sparks=[], shoots=[];
+function size(){ [cv,ev].forEach(c=>{c.width=innerWidth;c.height=innerHeight;}); }
+addEventListener("resize",size); size();
+
+function make(x,y,vx,vy){
+  return {x,y,vx,vy,s:5+Math.random()*10,r:Math.random()*6,vr:(Math.random()-.5)*.55,
+    shape:Math.random()<.3?"c":(Math.random()<.5?"s":"t"),
+    c:COLORS[(Math.random()*COLORS.length)|0],life:150};
+}
+function burst(n){
+  if(reduce) return;
+  for(let i=0;i<n;i++) bits.push(make(innerWidth/2+(Math.random()-.5)*320, innerHeight*.45,(Math.random()-.5)*18,-Math.random()*19-5));
+}
+function cannon(x,y,n,ang){
+  if(reduce) return;
+  for(let i=0;i<n;i++){
+    const a=ang+(Math.random()-.5)*.7, sp=14+Math.random()*16;
+    bits.push(make(x,y,Math.cos(a)*sp,Math.sin(a)*sp));
+  }
+}
+function sparkle(x,y,n){
+  if(reduce) return;
+  for(let i=0;i<n;i++){
+    const a=Math.random()*Math.PI*2, sp=1+Math.random()*7;
+    sparks.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-1,life:45,c:COLORS[(Math.random()*COLORS.length)|0],s:2+Math.random()*3});
+  }
+}
+let emb=[];
+for(let i=0;i<45;i++) emb.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,s:1+Math.random()*3,v:.3+Math.random()*1.1,a:Math.random()});
+
+(function loop(){
+  ectx.clearRect(0,0,ev.width,ev.height);
+  if(!reduce){
+    for(const e of emb){
+      e.y-=e.v; e.a+=.03; e.x+=Math.sin(e.a)*.5;
+      if(e.y<-10){e.y=innerHeight+10;e.x=Math.random()*innerWidth;}
+      ectx.globalAlpha=.35+Math.sin(e.a)*.25; ectx.fillStyle=emberColor;
+      ectx.beginPath(); ectx.arc(e.x,e.y,e.s,0,7); ectx.fill();
+    }
+    if(band==="night"&&Math.random()<.006) shoots.push({x:Math.random()*innerWidth*.7,y:Math.random()*innerHeight*.25,vx:10+Math.random()*6,vy:4+Math.random()*2,life:32});
+    shoots=shoots.filter(s=>s.life>0);
+    for(const s of shoots){
+      ectx.globalAlpha=s.life/32; ectx.strokeStyle="#FFF4DA"; ectx.lineWidth=2;
+      ectx.beginPath(); ectx.moveTo(s.x,s.y); ectx.lineTo(s.x-s.vx*3,s.y-s.vy*3); ectx.stroke();
+      s.x+=s.vx; s.y+=s.vy; s.life--;
+    }
+  }
+  ectx.globalAlpha=1;
+
+  ctx.clearRect(0,0,cv.width,cv.height);
+  bits=bits.filter(b=>b.life>0&&b.y<cv.height+60);
+  for(const b of bits){
+    b.vy+=.3; b.x+=b.vx+Math.sin(b.life/9)*.8; b.y+=b.vy; b.vx*=.99; b.r+=b.vr; b.life--;
+    ctx.save(); ctx.translate(b.x,b.y); ctx.rotate(b.r);
+    ctx.fillStyle=b.c; ctx.globalAlpha=Math.min(1,b.life/40);
+    if(b.shape==="c"){ctx.beginPath();ctx.arc(0,0,b.s/2,0,7);ctx.fill();}
+    else if(b.shape==="t"){ctx.fillRect(-b.s/6,-b.s,b.s/3,b.s*2);}
+    else{ctx.fillRect(-b.s/2,-b.s/2,b.s,b.s*.6);}
+    ctx.restore();
+  }
+  sparks=sparks.filter(s=>s.life>0);
+  for(const s of sparks){
+    s.vy+=.12; s.x+=s.vx; s.y+=s.vy; s.life--;
+    ctx.globalAlpha=s.life/45; ctx.fillStyle=s.c;
+    ctx.beginPath(); ctx.arc(s.x,s.y,s.s,0,7); ctx.fill();
+  }
+  ctx.globalAlpha=1;
+  requestAnimationFrame(loop);
+})();
+
+applyLang("en");
+(async()=>{
+  let seen=false;
+  try{ if(window.storage){ const r=await window.storage.get("sunrise-tut-seen"); seen=!!(r&&r.value); } }catch(e){}
+  if(!seen) setTimeout(openTut,400);
+})();
+</script>
+</body>
+</html>
