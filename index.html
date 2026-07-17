@@ -50,7 +50,7 @@
   .pill:hover{transform:translateY(-2px) scale(1.05)}
   .pill.on{background:var(--cream);color:var(--ink);border-color:var(--gold);box-shadow:0 0 0 3px rgba(255,210,63,.35)}
   .iconb{
-    width:38px;height:38px;border-radius:12px;cursor:pointer;font-size:17px;line-height:1;
+    position:relative;width:38px;height:38px;border-radius:12px;cursor:pointer;font-size:17px;line-height:1;
     background:rgba(43,10,32,.3);border:2px solid rgba(255,244,218,.35);color:var(--cream);
     transition:transform .12s;
   }
@@ -61,7 +61,6 @@
   .mascot:hover{animation:spin2 .8s ease-in-out}
   @keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-12px) rotate(3deg)}}
   @keyframes spin2{to{transform:rotate(360deg) scale(1.15)}}
-  #orbit{transform-origin:60px 60px;animation:spin 7s linear infinite reverse}
   h1{
     font-family:var(--display); font-weight:700;
     font-size:clamp(29px,7.5vw,49px); line-height:1.05; letter-spacing:-.01em;
@@ -80,7 +79,7 @@
   .tag{font-style:normal;font-family:var(--display);text-transform:none;letter-spacing:0;font-size:12px;background:rgba(43,10,32,.35);border:1px solid rgba(255,244,218,.35);padding:3px 12px;border-radius:99px;margin-left:8px;vertical-align:1px}
   .chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
   .chip{
-    display:flex;align-items:center;gap:10px;
+    display:flex;align-items:center;gap:8px;
     background:rgba(43,10,32,.24); border:2px solid transparent; border-radius:16px; padding:10px 12px;
     cursor:pointer; transition:transform .14s cubic-bezier(.2,1.6,.4,1),background .15s,border-color .15s,box-shadow .15s;
   }
@@ -88,9 +87,25 @@
   .chip.on{background:var(--cream);color:var(--ink);border-color:var(--gold);box-shadow:0 0 0 4px rgba(255,210,63,.35)}
   .chip.pop{animation:pop .4s cubic-bezier(.2,1.9,.4,1)}
   @keyframes pop{0%{transform:scale(1)}35%{transform:scale(1.12) rotate(2deg)}100%{transform:scale(1)}}
-  .chip .name{font-weight:800;font-size:14px;flex:1;text-align:left}
+  .chip .name{font-weight:800;font-size:14px;flex:1;text-align:left;min-width:0}
   .box{width:22px;height:22px;border-radius:7px;flex:none;border:2px solid currentColor;display:grid;place-items:center;font-size:12px;font-weight:800}
   .chip.on .box{background:var(--ember);border-color:var(--ember);color:var(--cream);animation:pop .4s}
+
+  /* per-chip edit + delete */
+  .chipact{display:flex;flex-direction:column;gap:4px;flex:none}
+  .chipact button{
+    width:22px;height:22px;border-radius:7px;border:none;cursor:pointer;font-size:11px;line-height:1;
+    display:grid;place-items:center;background:rgba(43,10,32,.28);color:var(--cream);opacity:.78;
+    transition:transform .1s,opacity .12s,background .15s,color .15s;
+  }
+  .chipact button:hover{opacity:1;transform:scale(1.18)}
+  .chip.on .chipact button{background:rgba(43,10,32,.12);color:var(--ink)}
+  .chipact .edit:hover{background:var(--gold);color:var(--ink)}
+  .chipact .del:hover{background:var(--ember);color:var(--cream)}
+  .rename{
+    flex:1;min-width:60px;font-family:var(--body);font-weight:800;font-size:14px;
+    background:rgba(255,244,218,.92);color:var(--ink);border:2px solid var(--gold);border-radius:10px;padding:4px 8px;
+  }
 
   .mins{display:flex;align-items:center;gap:4px;font-family:var(--display);font-size:13px}
   .step{width:26px;height:24px;border-radius:8px;border:none;cursor:pointer;background:rgba(255,244,218,.28);color:inherit;font-weight:700;line-height:1;transition:transform .1s,background .15s}
@@ -142,6 +157,7 @@
   .horizon svg{position:absolute;inset:0;width:100%;height:100%}
   #sunGroup,#moonGroup{transition:transform 1s cubic-bezier(.34,1.3,.5,1)}
   #rays{transform-origin:330px 150px;animation:spin 18s linear infinite}
+  #halo{transform-origin:330px 150px;animation:spin 46s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
   #dawn{transition:opacity 1s ease}
   #stars{transition:opacity 1.2s ease}
@@ -184,6 +200,8 @@
   .free h2{font-family:var(--display);font-size:clamp(27px,7vw,43px);line-height:1.1;animation:rainbow 1.2s ease-in-out infinite alternate}
   @keyframes rainbow{from{color:var(--ember)}to{color:var(--amber)}}
   .free p{color:var(--ink);font-weight:600;margin-top:6px}
+  .freestreak{margin-top:8px;font-family:var(--display);font-weight:700;font-size:17px;color:var(--ember)!important}
+  .freestreak:empty{display:none}
   .again{margin-top:14px;border:none;border-radius:16px;background:var(--ember);color:var(--cream);font-size:16px;font-weight:700;padding:12px 22px;cursor:pointer;transition:transform .12s}
   .again:hover{transform:scale(1.06) rotate(-1.5deg)}
   .hidden{display:none!important}
@@ -206,6 +224,31 @@
   .tnext{flex:1;border:none;border-radius:14px;background:var(--ember);color:var(--cream);font-size:17px;font-weight:700;padding:12px 18px;cursor:pointer;transition:transform .12s;box-shadow:0 4px 0 rgba(43,10,32,.3)}
   .tnext:hover{transform:translateY(-2px) scale(1.02)}
   .tnext:active{transform:translateY(2px)}
+  .fcol{flex-direction:column}
+  .fcol .tskip,.fcol .tnext{width:100%}
+  .tnext.hold{animation:pulse 1.6s ease-in-out infinite;touch-action:none;user-select:none;-webkit-user-select:none}
+  .badge{position:absolute;top:-8px;right:-8px;background:var(--ember);color:var(--cream);font-family:var(--display);font-size:10px;font-weight:700;border-radius:99px;padding:2px 6px;border:2px solid var(--gold);pointer-events:none;animation:pop .4s}
+  li.gold{border-color:var(--gold);box-shadow:0 0 16px rgba(255,210,63,.5), inset 0 0 18px rgba(255,210,63,.14)}
+  li.gold .task::after{content:" ✨"}
+  li.boss .task::before{content:"👑 "}
+  .eye{transform-box:fill-box;transform-origin:center;animation:blink 4.6s ease-in-out infinite}
+  @keyframes blink{0%,91%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}
+  #flash.gold{background:var(--gold)}
+  h1 .w{cursor:pointer}
+  h1 .w.pop{animation:pop .4s cubic-bezier(.2,1.9,.4,1)}
+  .pcall{font-size:16px;padding:13px;margin-top:14px}
+  .pchint{margin-top:10px;font-weight:800;font-size:13px;opacity:.85}
+  #pcList{margin-top:10px;max-height:240px;text-align:left}
+  #pcList .hrow{cursor:pointer;user-select:none;-webkit-user-select:none}
+  #pcList .hrow.redo{background:rgba(200,29,37,.16);border-color:var(--ember)}
+  #pcList .hrow.redo .hd{text-decoration:line-through}
+  .psay{margin-top:10px;font-style:italic;font-weight:700;color:var(--ink);opacity:.85}
+  .psay:empty{display:none}
+  .vcphrase{margin-top:10px;font-family:var(--display);font-size:19px;color:var(--ember);font-weight:700}
+  .vmeter{position:relative;height:16px;border-radius:99px;margin-top:14px;border:2px solid rgba(43,10,32,.25);background:linear-gradient(90deg,var(--gold),var(--amber) 55%,var(--ember))}
+  .vneedle{position:absolute;top:-7px;left:0%;width:6px;height:26px;border-radius:3px;background:var(--ink);transition:left .12s;transform:translateX(-3px)}
+  .vlabels{display:flex;justify-content:space-between;font-size:11px;font-weight:800;opacity:.8;margin-top:4px}
+  .vcpriv{margin-top:8px;font-size:11px;font-weight:700;opacity:.65}
 
   /* history */
   .hcard{max-width:470px;text-align:left}
@@ -215,7 +258,17 @@
   .hclose:hover{transform:scale(1.12) rotate(8deg)}
   .tclose{position:absolute;top:12px;right:12px}
   .hbest{margin-top:8px;font-weight:800;color:var(--flame)}
-  .hlist{margin-top:12px;max-height:320px;overflow:auto;display:flex;flex-direction:column;gap:8px;padding-right:4px}
+  .hbest:empty{display:none}
+
+  /* streaks & stats */
+  .hstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(82px,1fr));gap:8px;margin-top:12px}
+  .stat{background:rgba(43,10,32,.06);border:2px solid rgba(43,10,32,.1);border-radius:14px;padding:9px 6px;text-align:center}
+  .stat.hero{grid-column:1/-1;background:linear-gradient(100deg,rgba(242,92,5,.14),rgba(255,210,63,.2));border-color:rgba(242,92,5,.35)}
+  .stat.hero b{font-size:26px}
+  .stat b{display:block;font-family:var(--display);font-weight:700;font-size:19px;color:var(--flame);line-height:1.15}
+  .stat span{display:block;font-size:10.5px;font-weight:800;opacity:.75;margin-top:2px}
+
+  .hlist{margin-top:14px;max-height:300px;overflow:auto;display:flex;flex-direction:column;gap:8px;padding-right:4px}
   .hempty{font-weight:600;opacity:.8;line-height:1.5}
   .hrow{background:rgba(43,10,32,.07);border:2px solid rgba(43,10,32,.12);border-radius:14px;padding:10px 12px}
   .hrow .hd{display:flex;justify-content:space-between;align-items:center;font-family:var(--display);font-weight:600;gap:8px}
@@ -265,14 +318,51 @@
   <div class="tcard hcard">
     <div class="hhead"><h3 id="hTitle"></h3><button class="hclose" id="hClose" aria-label="Close">✕</button></div>
     <p class="hbest" id="hBest"></p>
+    <div class="hstats" id="hStats"></div>
     <div class="hlist" id="hList"></div>
+  </div>
+</div>
+
+<!-- SPEED CHECK -->
+<div id="fcheck" class="tut hidden" role="dialog" aria-modal="true">
+  <div class="tcard">
+    <div class="tmoji">⚡</div>
+    <h3 id="fcT"></h3>
+    <p id="fcQ"></p>
+    <div class="tdots" id="fcDots"><i></i><i></i><i></i></div>
+    <div class="trow fcol">
+      <button class="tnext" id="fcYes"></button>
+      <button class="tskip" id="fcNo"></button>
+    </div>
+  </div>
+</div>
+
+<!-- PARENT CHECK -->
+<div id="pcheck" class="tut hidden" role="dialog" aria-modal="true">
+  <div class="tcard">
+    <div class="tmoji" id="pcMoji">🚨</div>
+    <h3 id="pcT"></h3>
+    <p id="pcB"></p>
+    <div id="vcWrap" class="hidden">
+      <p class="vcphrase" id="vcPhrase"></p>
+      <div class="vmeter"><div class="vneedle" id="vNeedle"></div></div>
+      <div class="vlabels"><span id="vLow"></span><span id="vHigh"></span></div>
+      <p class="pchint" id="vcStatus"></p>
+      <p class="vcpriv" id="vcPriv"></p>
+    </div>
+    <p class="pchint hidden" id="pcHint"></p>
+    <div class="hlist hidden" id="pcList"></div>
+    <div class="trow fcol" style="margin-top:14px">
+      <button class="tnext" id="pcMain"></button>
+      <button class="tskip" id="pcAlt"></button>
+    </div>
   </div>
 </div>
 
 <main class="wrap">
   <div class="topbar">
     <div class="langs" id="langs"></div>
-    <button class="iconb" id="histBtn" aria-label="History">📅</button>
+    <button class="iconb" id="histBtn" aria-label="History">📅<span id="streakBadge" class="badge hidden"></span></button>
     <button class="iconb" id="sndBtn" aria-label="Sound">🔊</button>
     <button class="iconb" id="helpBtn" aria-label="Tutorial">❓</button>
   </div>
@@ -280,10 +370,10 @@
   <!-- HOME -->
   <section id="setup">
     <div class="hero">
-      <svg class="mascot" id="mascot" viewBox="0 0 120 120" role="img" aria-label="Sun with a little moon buddy orbiting it">
+      <svg class="mascot" id="mascot" viewBox="0 0 120 120" role="img" aria-label="Smiling sun mascot">
         <defs>
-          <radialGradient id="mBody" cx=".38" cy=".32" r="1">
-            <stop offset="0" stop-color="#FFFDF4"/><stop offset=".65" stop-color="#FFF1CE"/><stop offset="1" stop-color="#F3DFAE"/>
+          <radialGradient id="mBody" cx=".36" cy=".3" r="1">
+            <stop offset="0" stop-color="#FFFEF7"/><stop offset=".55" stop-color="#FFF3D3"/><stop offset="1" stop-color="#EFDCAC"/>
           </radialGradient>
           <radialGradient id="mGlow">
             <stop offset="0" stop-color="#FFF4DA" stop-opacity=".55"/><stop offset=".6" stop-color="#FFF4DA" stop-opacity=".2"/><stop offset="1" stop-color="#FFF4DA" stop-opacity="0"/>
@@ -302,15 +392,10 @@
         <g id="mcraters" style="display:none" fill="#EBD9AF" opacity=".55">
           <circle cx="78" cy="44" r="6"/><circle cx="42" cy="42" r="4"/><circle cx="80" cy="72" r="4"/>
         </g>
-        <circle cx="48" cy="54" r="5" fill="#2B0A20"/><circle cx="72" cy="54" r="5" fill="#2B0A20"/>
+        <circle class="eye" cx="48" cy="54" r="5" fill="#2B0A20"/><circle class="eye" cx="72" cy="54" r="5" fill="#2B0A20"/>
         <path d="M46 70 q14 14 28 0" stroke="#2B0A20" stroke-width="4" fill="none" stroke-linecap="round"/>
         <g id="mblush" fill="#F25C05" opacity=".5">
           <circle cx="40" cy="70" r="5"/><circle cx="80" cy="70" r="5"/>
-        </g>
-        <g id="orbit">
-          <circle id="mbGlow" cx="60" cy="10" r="13" fill="#FFF4DA" opacity=".3"/>
-          <circle id="mbuddy" cx="60" cy="10" r="9" fill="#FFF6E3"/>
-          <circle id="mbcr" cx="63" cy="8" r="2.5" fill="#EBD9AF" opacity=".7"/>
         </g>
       </svg>
       <h1 id="title"></h1>
@@ -353,12 +438,13 @@
           <linearGradient id="skyTo" x1="0" y1="0" x2="0" y2="1">
             <stop class="t0" offset="0" stop-color="#F25C05"/><stop class="t1" offset=".5" stop-color="#FF9505"/><stop class="t2" offset="1" stop-color="#FFD23F"/>
           </linearGradient>
-          <radialGradient id="moonBody" cx=".38" cy=".32" r="1">
-            <stop offset="0" stop-color="#FFFDF4"/><stop offset=".65" stop-color="#FFF1CE"/><stop offset="1" stop-color="#F3DFAE"/>
+          <radialGradient id="moonBody" cx=".36" cy=".3" r="1">
+            <stop offset="0" stop-color="#FFFEF7"/><stop offset=".55" stop-color="#FFF3D3"/><stop offset="1" stop-color="#EFDCAC"/>
           </radialGradient>
           <radialGradient id="moonGlow">
-            <stop offset="0" stop-color="#FFF4DA" stop-opacity=".5"/><stop offset=".55" stop-color="#FFF4DA" stop-opacity=".18"/><stop offset="1" stop-color="#FFF4DA" stop-opacity="0"/>
+            <stop offset="0" stop-color="#FFF4DA" stop-opacity=".6"/><stop offset=".55" stop-color="#FFF4DA" stop-opacity=".22"/><stop offset="1" stop-color="#FFF4DA" stop-opacity="0"/>
           </radialGradient>
+          <clipPath id="moonClip"><circle cx="330" cy="150" r="42"/></clipPath>
         </defs>
         <rect width="660" height="170" fill="url(#skyFrom)"/>
         <rect id="dawn" width="660" height="170" fill="url(#skyTo)" opacity="0"/>
@@ -366,18 +452,42 @@
         <g class="cloud"><ellipse cx="0" cy="42" rx="40" ry="12" fill="#FFF4DA"/><ellipse cx="28" cy="46" rx="30" ry="10" fill="#FFF4DA"/></g>
         <g class="cloud b"><ellipse cx="0" cy="80" rx="52" ry="13" fill="#FFF4DA"/><ellipse cx="-30" cy="84" rx="34" ry="10" fill="#FFF4DA"/></g>
 
-        <!-- THE MOON: soft glow, no hard edges, sleepy smile -->
+        <!-- THE MOON: pearly, haloed, lashes, little star friends -->
         <g id="moonGroup">
-          <circle cx="330" cy="150" r="80" fill="url(#moonGlow)"/>
+          <circle cx="330" cy="150" r="84" fill="url(#moonGlow)"/>
+          <circle id="halo" cx="330" cy="150" r="53" fill="none" stroke="#FFF4DA" stroke-width="1.6" stroke-dasharray="1.5 7.5" stroke-linecap="round" opacity=".45"/>
           <circle cx="330" cy="150" r="42" fill="url(#moonBody)"/>
-          <g fill="#EBD9AF" opacity=".5">
-            <circle cx="350" cy="128" r="5"/><circle cx="306" cy="126" r="3.5"/><circle cx="352" cy="160" r="4"/>
+          <g clip-path="url(#moonClip)">
+            <circle cx="341" cy="159" r="44" fill="#E2CD9C" opacity=".3"/>
+            <ellipse cx="315" cy="131" rx="19" ry="12" fill="#FFFFFF" opacity=".4"/>
+            <g opacity=".5">
+              <circle cx="350" cy="127" r="6" fill="#E3CFA0"/><circle cx="349" cy="126" r="4" fill="#F5E7C2"/>
+              <circle cx="306" cy="123" r="3.6" fill="#E3CFA0"/><circle cx="305.3" cy="122.4" r="2.3" fill="#F5E7C2"/>
+              <circle cx="353" cy="161" r="4.2" fill="#E3CFA0"/><circle cx="352.3" cy="160.3" r="2.7" fill="#F5E7C2"/>
+              <circle cx="317" cy="173" r="5" fill="#E3CFA0"/><circle cx="316.2" cy="172.2" r="3.2" fill="#F5E7C2"/>
+            </g>
           </g>
           <path d="M306 141 q7 6 14 0" stroke="#2B0A20" stroke-width="4" fill="none" stroke-linecap="round"/>
           <path d="M340 141 q7 6 14 0" stroke="#2B0A20" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <g stroke="#2B0A20" stroke-width="2" stroke-linecap="round">
+            <path d="M308 145 l-2.4 3"/><path d="M313 147 l0 3.4"/><path d="M318 145 l2.4 3"/>
+            <path d="M342 145 l-2.4 3"/><path d="M347 147 l0 3.4"/><path d="M352 145 l2.4 3"/>
+          </g>
           <path d="M318 156 q12 11 24 0" stroke="#2B0A20" stroke-width="4" fill="none" stroke-linecap="round"/>
           <g fill="#FFC49B" opacity=".55">
             <circle cx="304" cy="157" r="5"/><circle cx="356" cy="157" r="5"/>
+          </g>
+          <g fill="#FFD23F">
+            <path class="tw" d="M384 116 l2.3 5.2 5.2 2.3 -5.2 2.3 -2.3 5.2 -2.3 -5.2 -5.2 -2.3 5.2 -2.3z"/>
+            <path class="tw" style="animation-delay:1.2s" d="M276 122 l1.8 4 4 1.8 -4 1.8 -1.8 4 -1.8 -4 -4 -1.8 4 -1.8z" opacity=".85"/>
+            <circle class="tw" style="animation-delay:.6s" cx="372" cy="176" r="2" fill="#FFF4DA"/>
+          </g>
+          <g id="mshades" opacity="0" style="transition:opacity .6s">
+            <rect x="301" y="133" width="24" height="15" rx="6" fill="#2B0A20"/>
+            <rect x="335" y="133" width="24" height="15" rx="6" fill="#2B0A20"/>
+            <rect x="323" y="138" width="14" height="4" fill="#2B0A20"/>
+            <rect x="293" y="138" width="8" height="3" fill="#2B0A20"/><rect x="359" y="138" width="8" height="3" fill="#2B0A20"/>
+            <circle cx="308" cy="138" r="2.5" fill="#FFF4DA" opacity=".85"/><circle cx="342" cy="138" r="2.5" fill="#FFF4DA" opacity=".85"/>
           </g>
         </g>
 
@@ -390,8 +500,14 @@
           </g></g>
           <circle cx="330" cy="150" r="66" fill="#FFD23F" opacity=".3"/>
           <circle cx="330" cy="150" r="46" fill="#FFD23F" stroke="#FFF4DA" stroke-width="3"/>
-          <circle cx="318" cy="142" r="5" fill="#2B0A20"/><circle cx="342" cy="142" r="5" fill="#2B0A20"/>
+          <circle class="eye" cx="318" cy="142" r="5" fill="#2B0A20"/><circle class="eye" cx="342" cy="142" r="5" fill="#2B0A20"/>
           <path d="M316 158 q14 14 28 0" stroke="#2B0A20" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <g id="shades" opacity="0" style="transition:opacity .6s">
+            <rect x="306" y="134" width="24" height="15" rx="6" fill="#2B0A20"/>
+            <rect x="330" y="134" width="24" height="15" rx="6" fill="#2B0A20"/>
+            <rect x="298" y="139" width="8" height="3" fill="#2B0A20"/><rect x="354" y="139" width="8" height="3" fill="#2B0A20"/>
+            <circle cx="313" cy="139" r="2.5" fill="#FFF4DA" opacity=".85"/><circle cx="337" cy="139" r="2.5" fill="#FFF4DA" opacity=".85"/>
+          </g>
         </g>
 
         <rect y="146" width="660" height="24" fill="#F25C05"/>
@@ -400,11 +516,15 @@
       <div class="bar"><i id="barFill"></i></div>
     </div>
 
+    <button class="go pcall hidden" id="pcallBtn"></button>
+
     <ul id="list"></ul>
 
     <div class="free hidden" id="free">
       <h2 id="freeTitle"></h2>
       <p id="freeMsg"></p>
+      <p class="psay" id="parentSay"></p>
+      <p class="freestreak" id="freeStreak"></p>
       <button class="again" id="againBtn"></button>
     </div>
 
@@ -417,136 +537,280 @@
 const LANGS={
 en:{flag:"🇺🇸",label:"EN",
  chores:["Make my bed","Load the dishes","Tidy my room","Homework","Take out the trash","Feed the pet","Fold laundry","Vacuum","Wipe the table","Pack my bag"],
- shouts:["SKADOOSH!","BOOM!","NAILED IT!","TOO EASY!","ZOOM!","KAPOW!","CRUSHED IT!","BAM!","LEGEND!"],
+ shouts:["SKADOOSH!","MEGA-SKADOOSH!","SPAZZAZ!","BOOM!","NAILED IT!","TOO EASY!","ZOOM!","KAPOW!","CRUSHED IT!","BAM!","LEGEND!","ZING!","WHOOSH!"],
  t:{title:"Chores first. Then it's all yours.",
  sub:"Tap the chores you've got today. Squeeze the minutes. The faster the plan, the sooner you're out the door.",
  pick:"Pick your chores",addPh:"Add your own chore",add:"Add it",start:"Time window",from:"Start",to:"Finish by",
  make:"Make my schedule",again:"MORE CONFETTI 🎊",plan:"Plan another day",min:"min",mS:"m",more:"More time",less:"Less time",mark:"Mark done:",
+ edit:"Rename chore",del:"Delete chore",
+ statStreak:"Day streak",statDays:"Days done",statChores:"Chores crushed",statBest:"Fastest",statOnTime:"On-time",streakMsg:"🔥 {n}-day streak!",
  win:"{w} min window",sum:"{c} min of chores",spareS:"{m} min to spare 🎉",exactS:"exactly on time!",overS:"{m} min too many! ✂️",
  finishBy:"Finish by",done:"{x} of {y} done",
  bt:"{n} minutes of chores.<br>Then you're free at {t}.",
  btN:"{n} minutes of chores.<br>Then the moon takes over at {t}.",
  freeT:"FREE TIME! GO PLAY! 🎉",freeM:"Every chore checked off. The rest of the day belongs to you.",
- letsgo:"LET'S GOOO!",freetime:"FREE TIME!!!",party:["SKADOOSH!","YESSS!","CHORES = DEAD","GO PLAY!"],
+ letsgo:"LET'S GOOO!",freetime:"FREE TIME!!!",party:["SKADOOSH!","SPAZZAZ!","YESSS!","CHORES = DEAD","MEGA-SKADOOSH!","GO PLAY!"],
  bands:{morning:"🌅 Sunrise shift",day:"☀️ Full-sun mode",sunset:"🌇 Golden hour",night:"🌙 Night mission"},
  wins:{morning:"Sun's up, moon's asleep. You did it.",day:"Blazing. You did it.",sunset:"Sun's up. You did it.",night:"Moon's up, sun's in bed. You did it."},
  combo:"COMBO x{n}!",tSkip:"Skip",tNext:"Next",tGo:"Let's go!",
+ fc:{title:"WHOA — that was FAST! ⚡",qs:[
+  {q:"Did you really finish ALL of them?",y:"Yep, I'm just that fast 😎",n:"Hmm… let me peek 👀"},
+  {q:"Quick check: is “{c}” REALLY done?",y:"Sparkling ✨",n:"…maybe not 😅"},
+  {q:"Would a grown-up say WOW?",y:"Total WOW 🌟",n:"Better go look 🏃"}],
+  hold:{q:"Last one — pinky promise time 🤙 Hold the button while you think about it!",y:"HOLD 3 SECONDS to promise ✋",n:"…okay, I'll go check 🏃",oops:"HOLD IT!"},
+  pass:"FAST AND HONEST!",go:"GO CHECK! 👀"},
+ gold:"GOLDEN CHORE! ✨",boss:"BOSS CHORE DOWN! 👑",rec:"NEW RECORD! 🏆",
+ pc:{call:"🙋 Ready for parent check!",t1:"FREEZE! Parent check 🚨",
+  b1:"Everything's checked off! Now go get a grown-up — they get the final word.",
+  here:"A grown-up is here 🙋",notyet:"Wait, not done yet ↩",t2:"Grown-up inspection 🧐",
+  say:["Alright, let's see it. And yes, I WILL look under things.","Hmm… that was fast. Show me around, sweetheart.","Okay, okay, I'm coming! This better be as done as you say it is.","Let me get my glasses. Inspector Parent is on duty."],
+  hint:"Grown-up: tap anything that needs a redo, or hold the button to sign off.",
+  sign:"HOLD to sign off ✍️",back:"Send back ↩",
+  approved:"Inspected and approved — great work today. Now go play, you've earned it. ❤️",
+  okShout:"PARENT APPROVED! ✅",backShout:"NOT SO FAST! 😘",
+  toVoice:"Looks good → voice check 🎙️",
+  vc:{t:"Voice check 🎙️",b:"Final proof! Grown-up, say the magic words in your deepest grown-up voice:",
+   phrase:"“Inspected and approved!”",priv:"Nothing is recorded — your voice is checked right on this device.",
+   start:"Start the voice check 🎙️",listen:"Listening… say it now! 🎙️",again:"Try again 🎙️",goback:"↩ Back to the list",
+   low:"Grown-up rumble",high:"Squeaky",
+   pass:"Yep, that's a grown-up alright! ✅",fail:"Hmm… that sounded a little squeaky. Nice try, kiddo! 😏",
+   none:"I couldn't hear anything — a bit louder, please!",err:"No microphone available — grown-up, hold the button to sign instead."}},
  hist:"My days",histEmpty:"No days yet! Finish all your chores to save your first one.",
  best:"⚡ Best day: {m} min",rowT:"{n} chores · planned {p}m → real {a}m",fasterS:"⚡ faster",slowerS:"🐢 slower",
- steps:[{h:"Pick your chores",b:"Tap the cards you need to do today. Hit + and − to set the minutes for each one."},
+ steps:[{h:"Pick your chores",b:"Tap the cards you need to do today. Hit + and − to set the minutes. Use ✎ to rename or ✕ to remove one."},
  {h:"Set your time window",b:"Pick a start AND a finish-by time. Watch the sky change — night brings the moon!"},
  {h:"Get your schedule",b:"Every chore gets a clock time. Shortest first — quick wins to build speed!"},
- {h:"Check them off",b:"Confetti for every chore, and your day gets saved to 📅 so you can watch yourself get faster!"}]}},
+ {h:"Check them off",b:"Confetti for every chore, and your day saves to 📅 — build a streak and watch yourself get faster!"}]}},
 es:{flag:"🇪🇸",label:"ES",
  chores:["Hacer mi cama","Poner los platos","Ordenar mi cuarto","Tarea","Sacar la basura","Dar de comer a la mascota","Doblar la ropa","Pasar la aspiradora","Limpiar la mesa","Preparar mi mochila"],
- shouts:["¡SKADOOSH!","¡BUM!","¡GENIAL!","¡FACILÍSIMO!","¡ZAS!","¡PUM!","¡CRACK!","¡BRAVO!"],
+ shouts:["¡SKADOOSH!","¡MEGA-SKADOOSH!","¡SPAZZAZ!","¡BUM!","¡GENIAL!","¡FACILÍSIMO!","¡ZAS!","¡PUM!","¡CRACK!","¡BRAVO!"],
  t:{title:"Primero las tareas. Luego, ¡todo tuyo!",
  sub:"Toca las tareas de hoy y ajusta los minutos. ¡Cuanto más rápido el plan, antes sales a jugar!",
  pick:"Elige tus tareas",addPh:"Añade tu propia tarea",add:"Añadir",start:"Ventana de tiempo",from:"Inicio",to:"Terminar antes de",
  make:"Crear mi horario",again:"¡MÁS CONFETI! 🎊",plan:"Planear otro día",min:"min",mS:"m",more:"Más tiempo",less:"Menos tiempo",mark:"Marcar:",
+ edit:"Renombrar",del:"Borrar",
+ statStreak:"Días seguidos",statDays:"Días",statChores:"Tareas hechas",statBest:"Más rápido",statOnTime:"A tiempo",streakMsg:"🔥 ¡Racha de {n} días!",
  win:"ventana de {w} min",sum:"{c} min de tareas",spareS:"¡{m} min de sobra 🎉!",exactS:"¡justo a tiempo!",overS:"¡{m} min de más! ✂️",
  finishBy:"Termina antes de",done:"{x} de {y} listas",
  bt:"{n} minutos de tareas.<br>Después, ¡libre a las {t}!",
  btN:"{n} minutos de tareas.<br>Después, ¡la luna manda a las {t}!",
  freeT:"¡TIEMPO LIBRE! ¡A JUGAR! 🎉",freeM:"Todas las tareas listas. ¡El resto del día es tuyo!",
- letsgo:"¡VAMOOOS!",freetime:"¡TIEMPO LIBRE!",party:["¡SKADOOSH!","¡SÍÍÍ!","TAREAS = KO","¡A JUGAR!"],
+ letsgo:"¡VAMOOOS!",freetime:"¡TIEMPO LIBRE!",party:["¡SKADOOSH!","¡SPAZZAZ!","¡SÍÍÍ!","TAREAS = KO","¡MEGA-SKADOOSH!","¡A JUGAR!"],
  bands:{morning:"🌅 Turno del amanecer",day:"☀️ Pleno sol",sunset:"🌇 Hora dorada",night:"🌙 Misión nocturna"},
  wins:{morning:"Salió el sol, la luna a dormir. ¡Lo lograste!",day:"¡Brillante! Lo lograste.",sunset:"El sol arriba. ¡Lo lograste!",night:"La luna arriba, el sol a la cama. ¡Lo lograste!"},
  combo:"¡COMBO x{n}!",tSkip:"Saltar",tNext:"Siguiente",tGo:"¡Vamos!",
+ fc:{title:"¡GUAU, qué RÁPIDO! ⚡",qs:[
+  {q:"¿De verdad terminaste TODAS?",y:"Sí, soy así de rápido 😎",n:"Mmm… voy a mirar 👀"},
+  {q:"Chequeo sorpresa: ¿“{c}” está REALMENTE lista?",y:"Reluciente ✨",n:"…quizá no 😅"},
+  {q:"¿Un adulto diría GUAU?",y:"GUAU total 🌟",n:"Mejor voy a ver 🏃"}],
+  hold:{q:"¡La última! Promesa de meñique 🤙 ¡Mantén pulsado el botón mientras lo piensas!",y:"MANTÉN 3 SEGUNDOS para prometer ✋",n:"…vale, voy a mirar 🏃",oops:"¡AGUANTA!"},
+  pass:"¡RÁPIDO Y HONESTO!",go:"¡VE A MIRAR! 👀"},
+ gold:"¡TAREA DORADA! ✨",boss:"¡JEFE VENCIDO! 👑",rec:"¡NUEVO RÉCORD! 🏆",
+ pc:{call:"🙋 ¡Listo para el control de padres!",t1:"¡ALTO! Control de padres 🚨",
+  b1:"¡Todo marcado! Ahora ve a buscar a un adulto: la última palabra es suya.",
+  here:"Ya vino un adulto 🙋",notyet:"Espera, aún no ↩",t2:"Inspección de adulto 🧐",
+  say:["A ver, a ver… y sí, VOY a mirar debajo de las cosas.","Mmm… qué rápido. Enséñamelo todo, cariño.","¡Ya voy, ya voy! Más te vale que esté tan listo como dices.","Déjame ponerme las gafas. Inspector de guardia."],
+  hint:"Adulto: toca lo que haya que repetir, o mantén pulsado el botón para firmar.",
+  sign:"MANTÉN para firmar ✍️",back:"Devolver ↩",
+  approved:"Inspeccionado y aprobado: gran trabajo hoy. Ahora ve a jugar, te lo has ganado. ❤️",
+  okShout:"¡APROBADO! ✅",backShout:"¡NO TAN RÁPIDO! 😘",
+  toVoice:"Todo bien → control de voz 🎙️",
+  vc:{t:"Control de voz 🎙️",b:"¡Prueba final! Adulto, di las palabras mágicas con tu voz más grave:",
+   phrase:"“¡Inspeccionado y aprobado!”",priv:"No se graba nada: la voz se comprueba solo en este dispositivo.",
+   start:"Empezar el control de voz 🎙️",listen:"Escuchando… ¡dilo ahora! 🎙️",again:"Otra vez 🎙️",goback:"↩ Volver a la lista",
+   low:"Vozarrón adulto",high:"Voz de pito",
+   pass:"¡Sí, eso es un adulto! ✅",fail:"Mmm… sonó un poco agudo. ¡Buen intento! 😏",
+   none:"No oí nada… ¡un poco más fuerte!",err:"Sin micrófono: adulto, mantén el botón para firmar."}},
  hist:"Mis días",histEmpty:"¡Aún nada! Termina todas tus tareas para guardar tu primer día.",
  best:"⚡ Mejor día: {m} min",rowT:"{n} tareas · plan {p}m → real {a}m",fasterS:"⚡ más rápido",slowerS:"🐢 más lento",
- steps:[{h:"Elige tus tareas",b:"Toca las tarjetas de hoy. Usa + y − para poner los minutos."},
+ steps:[{h:"Elige tus tareas",b:"Toca las tarjetas de hoy. Usa + y − para los minutos, ✎ para renombrar y ✕ para quitar."},
  {h:"Elige tu ventana de tiempo",b:"Pon hora de inicio Y de final. ¡El cielo cambia — de noche llega la luna!"},
  {h:"Recibe tu horario",b:"Cada tarea tiene su hora. Las más cortas van primero: ¡victorias rápidas!"},
- {h:"Márcalas al terminar",b:"¡Confeti por cada una, y tu día se guarda en 📅 para ver cómo mejoras!"}]}},
+ {h:"Márcalas al terminar",b:"¡Confeti por cada una, y tu día se guarda en 📅 para hacer racha y ver cómo mejoras!"}]}},
 fr:{flag:"🇫🇷",label:"FR",
  chores:["Faire mon lit","Ranger la vaisselle","Ranger ma chambre","Devoirs","Sortir la poubelle","Nourrir l'animal","Plier le linge","Passer l'aspirateur","Essuyer la table","Préparer mon sac"],
- shouts:["SKADOOSH !","BOUM !","PAF !","TROP FACILE !","GÉNIAL !","ZOU !","BRAVO !"],
+ shouts:["SKADOOSH !","MÉGA-SKADOOSH !","SPAZZAZ !","BOUM !","PAF !","TROP FACILE !","GÉNIAL !","ZOU !","BRAVO !"],
  t:{title:"Les corvées d'abord. Après, c'est à toi !",
  sub:"Touche les corvées du jour et règle les minutes. Plus le plan est rapide, plus vite tu sors jouer !",
  pick:"Choisis tes corvées",addPh:"Ajoute ta propre corvée",add:"Ajouter",start:"Fenêtre de temps",from:"Début",to:"Finir avant",
  make:"Créer mon planning",again:"ENCORE DES CONFETTIS ! 🎊",plan:"Planifier un autre jour",min:"min",mS:"m",more:"Plus de temps",less:"Moins de temps",mark:"Cocher :",
+ edit:"Renommer",del:"Supprimer",
+ statStreak:"Jours d'affilée",statDays:"Jours",statChores:"Corvées faites",statBest:"Plus rapide",statOnTime:"À l'heure",streakMsg:"🔥 Série de {n} jours !",
  win:"fenêtre de {w} min",sum:"{c} min de corvées",spareS:"{m} min d'avance 🎉",exactS:"pile à l'heure !",overS:"{m} min de trop ! ✂️",
  finishBy:"À finir avant",done:"{x} sur {y} faites",
  bt:"{n} minutes de corvées.<br>Ensuite, libre à {t} !",
  btN:"{n} minutes de corvées.<br>Ensuite, la lune prend le relais à {t} !",
  freeT:"TEMPS LIBRE ! VA JOUER ! 🎉",freeM:"Toutes les corvées cochées. Le reste de la journée est à toi !",
- letsgo:"C'EST PARTIII !",freetime:"TEMPS LIBRE !!!",party:["SKADOOSH !","OUAIS !","CORVÉES = K.O.","VA JOUER !"],
+ letsgo:"C'EST PARTIII !",freetime:"TEMPS LIBRE !!!",party:["SKADOOSH !","SPAZZAZ !","OUAIS !","CORVÉES = K.O.","MÉGA-SKADOOSH !","VA JOUER !"],
  bands:{morning:"🌅 Équipe de l'aube",day:"☀️ Plein soleil",sunset:"🌇 Heure dorée",night:"🌙 Mission de nuit"},
  wins:{morning:"Soleil levé, lune endormie. Bravo !",day:"Éclatant ! Bravo !",sunset:"Soleil au sommet. Bravo !",night:"Lune levée, soleil au lit. Bravo !"},
  combo:"COMBO x{n} !",tSkip:"Passer",tNext:"Suivant",tGo:"C'est parti !",
+ fc:{title:"OH LÀ LÀ, trop RAPIDE ! ⚡",qs:[
+  {q:"Tu as VRAIMENT tout fini ?",y:"Oui, je suis rapide 😎",n:"Hmm… je vais voir 👀"},
+  {q:"Contrôle surprise : « {c} », c'est VRAIMENT fait ?",y:"Étincelant ✨",n:"…peut-être pas 😅"},
+  {q:"Un adulte dirait WAOUH ?",y:"WAOUH total 🌟",n:"Je vais vérifier 🏃"}],
+  hold:{q:"Dernière étape — promesse de petit doigt 🤙 Reste appuyé pendant que tu réfléchis !",y:"RESTE APPUYÉ 3 SECONDES ✋",n:"…bon, je vais vérifier 🏃",oops:"TIENS BON !"},
+  pass:"RAPIDE ET HONNÊTE !",go:"VA VOIR ! 👀"},
+ gold:"CORVÉE DORÉE ! ✨",boss:"BOSS VAINCU ! 👑",rec:"NOUVEAU RECORD ! 🏆",
+ pc:{call:"🙋 Prêt pour le contrôle des parents !",t1:"STOP ! Contrôle des parents 🚨",
+  b1:"Tout est coché ! Va chercher un adulte — c'est lui qui a le dernier mot.",
+  here:"Un adulte est là 🙋",notyet:"Attends, pas fini ↩",t2:"Inspection d'adulte 🧐",
+  say:["Voyons voir… et oui, je VAIS regarder sous les meubles.","Hmm… c'était rapide. Fais-moi visiter, mon cœur.","J'arrive, j'arrive ! J'espère que c'est aussi fini que tu le dis.","Je mets mes lunettes. Inspecteur Parent en service."],
+  hint:"Adulte : touche ce qui est à refaire, ou reste appuyé pour signer.",
+  sign:"RESTE APPUYÉ pour signer ✍️",back:"À refaire ↩",
+  approved:"Inspecté et approuvé — beau travail aujourd'hui. File jouer, tu l'as bien mérité. ❤️",
+  okShout:"APPROUVÉ ! ✅",backShout:"PAS SI VITE ! 😘",
+  toVoice:"C'est bon → contrôle vocal 🎙️",
+  vc:{t:"Contrôle vocal 🎙️",b:"Preuve finale ! Adulte, dis les mots magiques avec ta voix la plus grave :",
+   phrase:"« Inspecté et approuvé ! »",priv:"Rien n'est enregistré — la voix est vérifiée sur cet appareil uniquement.",
+   start:"Lancer le contrôle vocal 🎙️",listen:"J'écoute… dis-le maintenant ! 🎙️",again:"Réessayer 🎙️",goback:"↩ Retour à la liste",
+   low:"Grosse voix d'adulte",high:"Voix de souris",
+   pass:"Oui, c'est bien un adulte ! ✅",fail:"Hmm… c'était un peu aigu. Bien essayé ! 😏",
+   none:"Je n'ai rien entendu — un peu plus fort !",err:"Pas de micro — adulte, reste appuyé pour signer."}},
  hist:"Mes journées",histEmpty:"Rien pour l'instant ! Finis toutes tes corvées pour enregistrer ta première journée.",
  best:"⚡ Meilleur jour : {m} min",rowT:"{n} corvées · prévu {p}m → réel {a}m",fasterS:"⚡ plus rapide",slowerS:"🐢 plus lent",
- steps:[{h:"Choisis tes corvées",b:"Touche les cartes du jour. Utilise + et − pour régler les minutes."},
+ steps:[{h:"Choisis tes corvées",b:"Touche les cartes du jour. + et − pour les minutes, ✎ pour renommer, ✕ pour retirer."},
  {h:"Choisis ta fenêtre de temps",b:"Une heure de début ET une heure de fin. Le ciel change — la nuit, la lune arrive !"},
  {h:"Reçois ton planning",b:"Chaque corvée a son heure. Les plus courtes d'abord : victoires rapides !"},
- {h:"Coche-les",b:"Des confettis pour chacune, et ta journée est gardée dans 📅 pour voir tes progrès !"}]}},
+ {h:"Coche-les",b:"Des confettis pour chacune, et ta journée est gardée dans 📅 : fais une série et vois tes progrès !"}]}},
 de:{flag:"🇩🇪",label:"DE",
  chores:["Bett machen","Geschirr einräumen","Zimmer aufräumen","Hausaufgaben","Müll rausbringen","Haustier füttern","Wäsche falten","Staubsaugen","Tisch abwischen","Tasche packen"],
- shouts:["SKADOOSH!","ZACK!","BUMM!","GESCHAFFT!","SUPER!","WOW!","STARK!"],
+ shouts:["SKADOOSH!","MEGA-SKADOOSH!","SPAZZAZ!","ZACK!","BUMM!","GESCHAFFT!","SUPER!","WOW!","STARK!"],
  t:{title:"Erst die Aufgaben. Dann gehört dir der Tag!",
  sub:"Tippe deine Aufgaben an und stelle die Minuten ein. Je schneller der Plan, desto eher bist du draußen!",
  pick:"Wähle deine Aufgaben",addPh:"Eigene Aufgabe hinzufügen",add:"Hinzufügen",start:"Zeitfenster",from:"Start",to:"Fertig bis",
  make:"Meinen Plan erstellen",again:"MEHR KONFETTI! 🎊",plan:"Neuen Tag planen",min:"Min",mS:"m",more:"Mehr Zeit",less:"Weniger Zeit",mark:"Abhaken:",
+ edit:"Umbenennen",del:"Löschen",
+ statStreak:"Tage in Folge",statDays:"Tage",statChores:"Aufgaben",statBest:"Schnellste",statOnTime:"Pünktlich",streakMsg:"🔥 {n} Tage in Folge!",
  win:"{w} Min Fenster",sum:"{c} Min Aufgaben",spareS:"{m} Min übrig 🎉",exactS:"genau pünktlich!",overS:"{m} Min zu viel! ✂️",
  finishBy:"Fertig bis",done:"{x} von {y} erledigt",
  bt:"{n} Minuten Aufgaben.<br>Danach bist du frei um {t}!",
  btN:"{n} Minuten Aufgaben.<br>Danach übernimmt der Mond um {t}!",
  freeT:"FREIZEIT! GEH SPIELEN! 🎉",freeM:"Alle Aufgaben abgehakt. Der Rest des Tages gehört dir!",
- letsgo:"LOS GEHT'S!",freetime:"FREIZEIT!!!",party:["SKADOOSH!","JAAA!","AUFGABEN = K.O.","GEH SPIELEN!"],
+ letsgo:"LOS GEHT'S!",freetime:"FREIZEIT!!!",party:["SKADOOSH!","SPAZZAZ!","JAAA!","AUFGABEN = K.O.","MEGA-SKADOOSH!","GEH SPIELEN!"],
  bands:{morning:"🌅 Sonnenaufgang",day:"☀️ Volle Sonne",sunset:"🌇 Goldene Stunde",night:"🌙 Nachtmission"},
  wins:{morning:"Sonne oben, Mond schläft. Geschafft!",day:"Strahlend! Geschafft!",sunset:"Sonne oben. Geschafft!",night:"Mond oben, Sonne im Bett. Geschafft!"},
  combo:"COMBO x{n}!",tSkip:"Überspringen",tNext:"Weiter",tGo:"Los geht's!",
+ fc:{title:"WOW, das war SCHNELL! ⚡",qs:[
+  {q:"Hast du WIRKLICH alles geschafft?",y:"Ja, ich bin so schnell 😎",n:"Hmm… ich schau nach 👀"},
+  {q:"Blitz-Check: Ist „{c}“ WIRKLICH fertig?",y:"Blitzblank ✨",n:"…vielleicht nicht 😅"},
+  {q:"Würde ein Erwachsener WOW sagen?",y:"Voll WOW 🌟",n:"Lieber nachsehen 🏃"}],
+  hold:{q:"Letzte Runde — kleiner-Finger-Versprechen 🤙 Halte den Knopf gedrückt und denk nach!",y:"3 SEKUNDEN HALTEN zum Versprechen ✋",n:"…okay, ich schau nach 🏃",oops:"FESTHALTEN!"},
+  pass:"SCHNELL UND EHRLICH!",go:"GEH GUCKEN! 👀"},
+ gold:"GOLD-AUFGABE! ✨",boss:"BOSS BESIEGT! 👑",rec:"NEUER REKORD! 🏆",
+ pc:{call:"🙋 Bereit für den Eltern-Check!",t1:"STOPP! Eltern-Check 🚨",
+  b1:"Alles abgehakt! Hol jetzt einen Erwachsenen — der hat das letzte Wort.",
+  here:"Ein Erwachsener ist da 🙋",notyet:"Moment, noch nicht ↩",t2:"Erwachsenen-Inspektion 🧐",
+  say:["Na, dann zeig mal her… und ja, ich schaue AUCH unter die Möbel.","Hmm… das ging schnell. Führ mich mal herum, Schatz.","Ich komme ja schon! Das ist hoffentlich so fertig, wie du sagst.","Brille aufgesetzt. Inspektor Elternteil im Dienst."],
+  hint:"Erwachsene: tippe an, was nochmal gemacht werden muss, oder halte den Knopf zum Unterschreiben.",
+  sign:"HALTEN zum Unterschreiben ✍️",back:"Zurückschicken ↩",
+  approved:"Geprüft und genehmigt — tolle Arbeit heute. Jetzt geh spielen, das hast du dir verdient. ❤️",
+  okShout:"GENEHMIGT! ✅",backShout:"NICHT SO SCHNELL! 😘",
+  toVoice:"Sieht gut aus → Stimmen-Check 🎙️",
+  vc:{t:"Stimmen-Check 🎙️",b:"Letzter Beweis! Erwachsener, sag die Zauberworte mit deiner tiefsten Stimme:",
+   phrase:"„Geprüft und genehmigt!“",priv:"Nichts wird aufgenommen — die Stimme wird nur auf diesem Gerät geprüft.",
+   start:"Stimmen-Check starten 🎙️",listen:"Ich höre zu… jetzt sagen! 🎙️",again:"Nochmal 🎙️",goback:"↩ Zurück zur Liste",
+   low:"Erwachsenen-Brummen",high:"Piepsig",
+   pass:"Jawohl, das ist ein Erwachsener! ✅",fail:"Hmm… das klang etwas piepsig. Netter Versuch! 😏",
+   none:"Ich habe nichts gehört — etwas lauter, bitte!",err:"Kein Mikrofon — Erwachsener, halte den Knopf zum Unterschreiben."}},
  hist:"Meine Tage",histEmpty:"Noch nichts! Erledige alle Aufgaben, um deinen ersten Tag zu speichern.",
  best:"⚡ Bester Tag: {m} Min",rowT:"{n} Aufgaben · geplant {p}m → echt {a}m",fasterS:"⚡ schneller",slowerS:"🐢 langsamer",
- steps:[{h:"Wähle deine Aufgaben",b:"Tippe die Karten für heute an. Mit + und − stellst du die Minuten ein."},
+ steps:[{h:"Wähle deine Aufgaben",b:"Tippe die Karten für heute an. + und − für die Minuten, ✎ zum Umbenennen, ✕ zum Entfernen."},
  {h:"Wähle dein Zeitfenster",b:"Startzeit UND Endzeit. Der Himmel ändert sich — nachts kommt der Mond!"},
  {h:"Hol dir deinen Plan",b:"Jede Aufgabe bekommt ihre Uhrzeit. Die kürzesten zuerst – schnelle Siege!"},
- {h:"Hake sie ab",b:"Konfetti für jede Aufgabe, und dein Tag landet in 📅 – so siehst du, wie du schneller wirst!"}]}},
+ {h:"Hake sie ab",b:"Konfetti für jede Aufgabe, und dein Tag landet in 📅 – bau eine Serie und werde schneller!"}]}},
 zh:{flag:"🇨🇳",label:"中文",
  chores:["整理床铺","收拾碗筷","收拾房间","写作业","倒垃圾","喂宠物","叠衣服","吸地","擦桌子","收书包"],
- shouts:["SKADOOSH!","太棒了！","搞定！","轰！","厉害！","冲鸭！","真牛！"],
+ shouts:["SKADOOSH!","超级SKADOOSH!","SPAZZAZ!","太棒了！","搞定！","轰！","厉害！","冲鸭！","真牛！"],
  t:{title:"先做家务，然后时间全归你！",
  sub:"点选今天的家务，调好分钟数。计划越快，出去玩得越早！",
  pick:"选择你的家务",addPh:"添加自己的家务",add:"添加",start:"时间窗口",from:"开始",to:"截止",
  make:"生成我的日程",again:"再来点彩带！🎊",plan:"再计划一天",min:"分钟",mS:"分",more:"加时间",less:"减时间",mark:"完成：",
+ edit:"重命名",del:"删除",
+ statStreak:"连续天数",statDays:"完成天数",statChores:"完成家务",statBest:"最快",statOnTime:"准时率",streakMsg:"🔥 连续 {n} 天！",
  win:"时间窗 {w} 分钟",sum:"家务 {c} 分钟",spareS:"多出 {m} 分钟 🎉",exactS:"刚刚好！",overS:"超了 {m} 分钟！✂️",
  finishBy:"截止",done:"已完成 {x}/{y}",
  bt:"家务共 {n} 分钟。<br>{t} 你就自由啦！",
  btN:"家务共 {n} 分钟。<br>{t} 月亮就接班啦！",
  freeT:"自由时间！去玩吧！🎉",freeM:"所有家务搞定，剩下的时间都是你的！",
- letsgo:"冲呀！！",freetime:"自由时间！！！",party:["SKADOOSH!","耶！！","家务=清零","去玩吧！"],
+ letsgo:"冲呀！！",freetime:"自由时间！！！",party:["SKADOOSH!","SPAZZAZ!","耶！！","家务=清零","超级SKADOOSH!","去玩吧！"],
  bands:{morning:"🌅 日出模式",day:"☀️ 烈日模式",sunset:"🌇 黄金时刻",night:"🌙 夜间任务"},
  wins:{morning:"太阳升起，月亮睡了。你做到了！",day:"阳光满满！你做到了！",sunset:"太阳升起。你做到了！",night:"月亮升起，太阳睡觉。你做到了！"},
  combo:"连击 x{n}！",tSkip:"跳过",tNext:"下一步",tGo:"开始吧！",
+ fc:{title:"哇！也太快了吧！⚡",qs:[
+  {q:"真的全部做完了吗？",y:"对，我就是这么快 😎",n:"嗯……我去看看 👀"},
+  {q:"突击检查：『{c}』真的完成了吗？",y:"闪闪发光 ✨",n:"……好像没有 😅"},
+  {q:"大人看了会说哇吗？",y:"绝对哇 🌟",n:"还是去看看 🏃"}],
+  hold:{q:"最后一关——拉钩保证 🤙 按住按钮，好好想一想！",y:"按住 3 秒来保证 ✋",n:"……好吧，我去看看 🏃",oops:"别松手！"},
+  pass:"又快又诚实！",go:"快去检查！👀"},
+ gold:"黄金家务！✨",boss:"打败大BOSS！👑",rec:"新纪录！🏆",
+ pc:{call:"🙋 可以请家长来检查啦！",t1:"停！家长检查 🚨",
+  b1:"全部打勾啦！快去请一位大人来——最后要他们说了算。",
+  here:"大人来了 🙋",notyet:"等等，还没好 ↩",t2:"大人验收 🧐",
+  say:["来来来，让我看看……对，柜子底下我也要看。","嗯……这么快？带我转一圈，宝贝。","来了来了！最好像你说的那样都做完了。","眼镜戴上，家长检查员上岗！"],
+  hint:"家长：点一下需要返工的项目，或按住按钮签字。",
+  sign:"按住签字 ✍️",back:"打回重做 ↩",
+  approved:"检查通过——今天干得漂亮。去玩吧，这是你应得的。❤️",
+  okShout:"家长通过！✅",backShout:"没那么快！😘",
+  toVoice:"没问题 → 声音检查 🎙️",
+  vc:{t:"声音检查 🎙️",b:"最后一关！请大人用最低沉的声音说出魔法口令：",
+   phrase:"“检查通过，批准！”",priv:"不会录音——声音只在这台设备上检测。",
+   start:"开始声音检查 🎙️",listen:"正在听……现在说！🎙️",again:"再试一次 🎙️",goback:"↩ 返回清单",
+   low:"大人低音区",high:"尖细区",
+   pass:"没错，这就是大人的声音！✅",fail:"嗯……声音有点尖哦。想得美！😏",
+   none:"没听到声音——再大声一点！",err:"没有麦克风——请大人按住按钮签字。"}},
  hist:"我的记录",histEmpty:"还没有记录！完成所有家务就能保存第一天。",
  best:"⚡ 最快：{m} 分钟",rowT:"{n}项 · 计划{p}分 → 实际{a}分",fasterS:"⚡ 更快了",slowerS:"🐢 慢了点",
- steps:[{h:"选择你的家务",b:"点一点今天要做的卡片，用 + 和 − 调整分钟。"},
+ steps:[{h:"选择你的家务",b:"点一点今天要做的卡片，用 + 和 − 调整分钟，✎ 改名字，✕ 删掉。"},
  {h:"选时间窗口",b:"设置开始和截止时间。天空会变——选晚上，月亮就出场！"},
  {h:"拿到你的日程",b:"每个家务都有自己的时间。短的排前面——先赢几局！"},
- {h:"完成就打勾",b:"每个家务都有彩带，你的一天还会存进📅，看看自己越来越快！"}]}},
+ {h:"完成就打勾",b:"每个家务都有彩带，你的一天还会存进📅，连续打卡看看自己越来越快！"}]}},
 hi:{flag:"🇮🇳",label:"हिं",
  chores:["बिस्तर ठीक करना","बर्तन रखना","कमरा साफ़ करना","होमवर्क","कचरा फेंकना","पालतू को खाना देना","कपड़े तह करना","वैक्यूम करना","मेज़ पोंछना","बैग तैयार करना"],
- shouts:["SKADOOSH!","धमाका!","वाह!","हो गया!","झकास!","शाबाश!","कमाल!"],
+ shouts:["SKADOOSH!","मेगा-SKADOOSH!","SPAZZAZ!","धमाका!","वाह!","हो गया!","झकास!","शाबाश!","कमाल!"],
  t:{title:"पहले काम, फिर सारा समय तुम्हारा!",
  sub:"आज के काम चुनो और मिनट सेट करो। जितना तेज़ प्लान, उतनी जल्दी खेलने!",
  pick:"अपने काम चुनो",addPh:"अपना काम जोड़ो",add:"जोड़ो",start:"समय विंडो",from:"शुरू",to:"इससे पहले",
  make:"मेरा शेड्यूल बनाओ",again:"और कंफ़ेटी! 🎊",plan:"नया दिन प्लान करो",min:"मिनट",mS:"मि",more:"समय बढ़ाओ",less:"समय घटाओ",mark:"पूरा:",
+ edit:"नाम बदलो",del:"हटाओ",
+ statStreak:"लगातार दिन",statDays:"दिन",statChores:"काम पूरे",statBest:"सबसे तेज़",statOnTime:"समय पर",streakMsg:"🔥 {n} दिन की लय!",
  win:"{w} मिनट की विंडो",sum:"{c} मिनट के काम",spareS:"{m} मिनट बचेंगे 🎉",exactS:"बिल्कुल टाइम पर!",overS:"{m} मिनट ज़्यादा! ✂️",
  finishBy:"इससे पहले ख़त्म",done:"{y} में से {x} पूरे",
  bt:"{n} मिनट के काम।<br>फिर {t} बजे आज़ादी!",
  btN:"{n} मिनट के काम।<br>फिर {t} बजे चाँद की बारी!",
  freeT:"फ्री टाइम! खेलने जाओ! 🎉",freeM:"सारे काम पूरे! बाक़ी दिन तुम्हारा है!",
- letsgo:"चलोओओ!",freetime:"फ्री टाइम!!!",party:["SKADOOSH!","येऽऽ!","काम = ख़त्म","खेलने जाओ!"],
+ letsgo:"चलोओओ!",freetime:"फ्री टाइम!!!",party:["SKADOOSH!","SPAZZAZ!","येऽऽ!","काम = ख़त्म","मेगा-SKADOOSH!","खेलने जाओ!"],
  bands:{morning:"🌅 सुबह की पारी",day:"☀️ धूप मोड",sunset:"🌇 सुनहरा समय",night:"🌙 रात का मिशन"},
  wins:{morning:"सूरज ऊपर, चाँद सो गया। कर दिखाया!",day:"चमकदार! कर दिखाया!",sunset:"सूरज ऊपर। कर दिखाया!",night:"चाँद ऊपर, सूरज सो गया। कर दिखाया!"},
  combo:"कॉम्बो x{n}!",tSkip:"छोड़ो",tNext:"आगे",tGo:"चलो!",
+ fc:{title:"वाह, इतनी जल्दी! ⚡",qs:[
+  {q:"सच में सारे काम पूरे?",y:"हाँ, मैं इतना तेज़ हूँ 😎",n:"हम्म… देख लेता हूँ 👀"},
+  {q:"झटपट चेक: क्या “{c}” सच में हो गया?",y:"चमचमाता ✨",n:"…शायद नहीं 😅"},
+  {q:"क्या बड़े देखकर कहेंगे वाह?",y:"एकदम वाह 🌟",n:"जाकर देखता हूँ 🏃"}],
+  hold:{q:"आख़िरी! पिंकी प्रॉमिस 🤙 बटन दबाए रखो और सोचो!",y:"वादे के लिए 3 सेकंड दबाए रखो ✋",n:"…ठीक है, देख लेता हूँ 🏃",oops:"पकड़े रहो!"},
+  pass:"तेज़ और सच्चा!",go:"जाकर देखो! 👀"},
+ gold:"गोल्डन काम! ✨",boss:"बॉस ख़त्म! 👑",rec:"नया रिकॉर्ड! 🏆",
+ pc:{call:"🙋 पेरेंट-चेक के लिए तैयार!",t1:"रुको! पेरेंट-चेक 🚨",
+  b1:"सब टिक हो गया! अब किसी बड़े को बुलाओ — आख़िरी मुहर उन्हीं की।",
+  here:"बड़े आ गए 🙋",notyet:"रुको, अभी नहीं ↩",t2:"बड़ों की जाँच 🧐",
+  say:["अच्छा, दिखाओ ज़रा… और हाँ, नीचे झाँककर भी देखा जाएगा!","हम्म… इतनी जल्दी? चलो, सब घुमाकर दिखाओ।","बस आ गए, आ गए! जितना कह रहे हो उतना हुआ भी हो।","चश्मा लगा लिया — इंस्पेक्टर ड्यूटी पर!"],
+  hint:"बड़े: जो दोबारा करना हो उसे टैप करें, या साइन के लिए बटन दबाए रखें।",
+  sign:"साइन के लिए दबाए रखें ✍️",back:"वापस भेजो ↩",
+  approved:"जाँच पूरी, मंज़ूर — आज कमाल किया। जाओ खेलो, तुमने कमाया है। ❤️",
+  okShout:"पेरेंट पास! ✅",backShout:"इतनी जल्दी नहीं! 😘",
+  toVoice:"सब ठीक → आवाज़ की जाँच 🎙️",
+  vc:{t:"आवाज़ की जाँच 🎙️",b:"आख़िरी सबूत! बड़े, अपनी सबसे भारी आवाज़ में जादुई शब्द बोलें:",
+   phrase:"“जाँच पूरी, मंज़ूर!”",priv:"कुछ रिकॉर्ड नहीं होता — आवाज़ सिर्फ़ इसी डिवाइस पर जाँची जाती है।",
+   start:"आवाज़ की जाँच शुरू करें 🎙️",listen:"सुन रहे हैं… अब बोलिए! 🎙️",again:"फिर से 🎙️",goback:"↩ सूची पर वापस",
+   low:"बड़ों की भारी आवाज़",high:"पतली आवाज़",
+   pass:"हाँ, यही बड़ों की आवाज़ है! ✅",fail:"हम्म… आवाज़ थोड़ी पतली लगी। अच्छी कोशिश! 😏",
+   none:"कुछ सुनाई नहीं दिया — थोड़ा ज़ोर से!",err:"माइक नहीं है — बड़े, साइन के लिए बटन दबाए रखें।"}},
  hist:"मेरे दिन",histEmpty:"अभी कुछ नहीं! सारे काम पूरे करो, पहला दिन सेव होगा।",
  best:"⚡ बेस्ट: {m} मिनट",rowT:"{n} काम · प्लान {p}मि → असली {a}मि",fasterS:"⚡ और तेज़",slowerS:"🐢 थोड़ा धीमा",
- steps:[{h:"अपने काम चुनो",b:"आज के कार्ड टैप करो। + और − से मिनट सेट करो।"},
+ steps:[{h:"अपने काम चुनो",b:"आज के कार्ड टैप करो। + और − से मिनट, ✎ से नाम बदलो, ✕ से हटाओ।"},
  {h:"समय विंडो चुनो",b:"शुरू और ख़त्म का समय सेट करो। आसमान बदलता है — रात में चाँद आता है!"},
  {h:"अपना शेड्यूल पाओ",b:"हर काम का अपना समय। छोटे पहले — झटपट जीत!"},
- {h:"पूरा करके टिक लगाओ",b:"हर काम पर कंफ़ेटी, और तुम्हारा दिन 📅 में सेव होगा — देखो कितने तेज़ हो रहे हो!"}]}}
+ {h:"पूरा करके टिक लगाओ",b:"हर काम पर कंफ़ेटी, और तुम्हारा दिन 📅 में सेव — लगातार करो और तेज़ बनो!"}]}}
 };
 let lang="en";
 const L=()=>LANGS[lang];
@@ -580,15 +844,53 @@ let hist=[];
       if(r&&r.value) hist=JSON.parse(r.value);
     }
   }catch(e){/* first visit or storage unavailable — start fresh */}
+  updateBadge();
 })();
 async function saveHist(){
   try{ if(window.storage) await window.storage.set("sunrise-history",JSON.stringify(hist.slice(0,60))); }catch(e){}
 }
+
+/* streaks & stats derived from saved days */
+function computeStats(){
+  if(!hist.length) return null;
+  const dk=iso=>new Date(iso).toLocaleDateString("en-CA");        /* YYYY-MM-DD in local time */
+  const days=[...new Set(hist.map(h=>dk(h.d)))].sort().reverse(); /* unique days, newest first */
+  const todayKey=new Date().toLocaleDateString("en-CA");
+  const yKey=new Date(Date.now()-864e5).toLocaleDateString("en-CA");
+  let streak=0;
+  if(days[0]===todayKey || days[0]===yKey){
+    let cur=new Date(days[0]+"T12:00:00");                        /* noon dodges DST edges */
+    for(const d of days){
+      if(d===cur.toLocaleDateString("en-CA")){ streak++; cur=new Date(cur.getTime()-864e5); }
+      else break;
+    }
+  }
+  return {
+    streak,
+    totalDays:days.length,
+    totalChores:hist.reduce((s,h)=>s+h.n,0),
+    best:Math.min(...hist.map(h=>h.a)),
+    onTimePct:Math.round(hist.filter(h=>h.a<=h.p).length/hist.length*100)
+  };
+}
+function updateBadge(){
+  const st=computeStats(), b=$("streakBadge");
+  if(st&&st.streak>=2){ b.textContent="🔥"+st.streak; b.classList.remove("hidden"); }
+  else b.classList.add("hidden");
+}
+
 function renderHist(){
   const T=L().t;
   $("hTitle").textContent="📅 "+T.hist;
-  if(!hist.length){ $("hBest").textContent=""; $("hList").innerHTML=`<p class="hempty">${T.histEmpty}</p>`; return; }
-  $("hBest").textContent=T.best.replace("{m}",Math.min(...hist.map(h=>h.a)));
+  const st=computeStats();
+  if(!st){ $("hBest").textContent=""; $("hStats").innerHTML=""; $("hList").innerHTML=`<p class="hempty">${T.histEmpty}</p>`; return; }
+  $("hBest").textContent="";
+  $("hStats").innerHTML=`
+    <div class="stat hero"><b>🔥 ${st.streak}</b><span>${T.statStreak}</span></div>
+    <div class="stat"><b>✅ ${st.totalDays}</b><span>${T.statDays}</span></div>
+    <div class="stat"><b>🧹 ${st.totalChores}</b><span>${T.statChores}</span></div>
+    <div class="stat"><b>⚡ ${st.best}${T.mS}</b><span>${T.statBest}</span></div>
+    <div class="stat"><b>🎯 ${st.onTimePct}%</b><span>${T.statOnTime}</span></div>`;
   $("hList").innerHTML="";
   hist.forEach((h,i)=>{
     const prev=hist[i+1];
@@ -619,6 +921,11 @@ function beep(f,d,type="square",vol=.14,when=0){
 }
 function clickSnd(){beep(340,.05,"sine",.09)}
 function popSnd(c=1){beep(440+c*70,.08); beep(700+c*70,.12,"square",.11,.05)}
+function delSnd(){beep(300,.1,"sawtooth",.09); beep(150,.16,"sine",.07,.05)}
+function boomSnd(){beep(90,.35,"sine",.24); beep(55,.5,"sine",.16,.06); beep(620,.06,"square",.09)}
+function goldSnd(){[784,988,1319,1568].forEach((f,i)=>beep(f,.14,"triangle",.12,i*.06))}
+function dingSnd(){beep(659,.22,"sine",.15); beep(523,.34,"sine",.13,.2)}
+function flashGold(){ const fl=$("flash"); fl.classList.add("gold"); fl.classList.remove("on"); void fl.offsetWidth; fl.classList.add("on"); setTimeout(()=>fl.classList.remove("gold"),700); }
 function tadaSnd(){[523,659,784,1047].forEach((f,i)=>beep(f,.3,"triangle",.15,i*.11))}
 $("sndBtn").onclick=()=>{ soundOn=!soundOn; $("sndBtn").textContent=soundOn?"🔊":"🔇"; if(soundOn) clickSnd(); };
 
@@ -663,6 +970,10 @@ function applyLang(l){
   if(plan.length){ updateBoardTitle(); renderBoard(); }
   renderTut();
   if(!$("hist").classList.contains("hidden")) renderHist();
+  if(!$("fcheck").classList.contains("hidden")) renderFc();
+  $("pcallBtn").textContent=T.pc.call;
+  if(!$("pcheck").classList.contains("hidden")) renderParent();
+  if($("parentSay").textContent) $("parentSay").textContent="“"+T.pc.approved+"”";
 }
 
 /* ================= SKY ================= */
@@ -678,26 +989,27 @@ function applyBand(b){
   $("mrays").style.display=B.moon?"none":"";
   $("mcraters").style.display=B.moon?"":"none";
   $("mblush").setAttribute("fill",B.moon?"#FFB98A":"#F25C05");
-  $("mbuddy").setAttribute("fill",B.moon?"#FFD23F":"#FFF6E3");
-  $("mbGlow").setAttribute("fill",B.moon?"#FFD23F":"#FFF4DA");
-  $("mbcr").style.display=B.moon?"none":"";
   emberColor=B.ember;
   positionSky(plan.length?plan.filter(c=>c.done).length/plan.length:0);
 }
 
 function positionSky(p){
+  const moonMode=BANDS[band].moon;
   const sway=Math.sin(p*Math.PI*2.2)*150;
-  const riser=BANDS[band].moon?$("moonGroup"):$("sunGroup");
-  const setter=BANDS[band].moon?$("sunGroup"):$("moonGroup");
-  riser.setAttribute("transform",`translate(${sway.toFixed(1)},${(-p*128).toFixed(1)}) rotate(${(p*14).toFixed(1)} 330 150)`);
-  if(BANDS[band].moon){
-    setter.setAttribute("transform",`translate(${(-sway*.4).toFixed(1)},${(-6+p*150).toFixed(1)}) rotate(${(-p*8).toFixed(1)} 330 150)`);
+  if(moonMode){
+    /* rising moon tops out fully inside the frame — no more chopped moon */
+    $("moonGroup").setAttribute("transform",`translate(${(sway*.6).toFixed(1)},${(-p*84).toFixed(1)}) rotate(${(p*10).toFixed(1)} 330 150)`);
+    $("sunGroup").setAttribute("transform",`translate(${(-sway*.4).toFixed(1)},${(-6+p*150).toFixed(1)}) rotate(${(-p*8).toFixed(1)} 330 150)`);
   } else {
-    setter.setAttribute("transform",`translate(${(-sway*.8).toFixed(1)},${(-116+p*230).toFixed(1)}) rotate(${(-p*12).toFixed(1)} 330 150)`);
+    $("sunGroup").setAttribute("transform",`translate(${sway.toFixed(1)},${(-p*128).toFixed(1)}) rotate(${(p*14).toFixed(1)} 330 150)`);
+    /* setting moon starts lower so its circle never clips the top edge */
+    $("moonGroup").setAttribute("transform",`translate(${(-sway*.5).toFixed(1)},${(-98+p*210).toFixed(1)}) rotate(${(-p*8).toFixed(1)} 330 150)`);
   }
   $("dawn").setAttribute("opacity",p.toFixed(2));
   const s=BANDS[band].stars;
   $("stars").style.opacity = s==="in" ? p.toFixed(2) : s==="out" ? (1-p).toFixed(2) : 0;
+  $("shades").setAttribute("opacity",(!moonMode&&p===1)?1:0);
+  $("mshades").setAttribute("opacity",(moonMode&&p===1)?1:0);
 }
 
 const starsG=$("stars");
@@ -749,22 +1061,60 @@ function renderChips(){
         <button class="step plus" data-d="1" aria-label="${T.more}">+</button>
         <span class="m">${c.mins} ${T.min}</span>
         <button class="step minus" data-d="-1" aria-label="${T.less}">−</button>
+      </span>
+      <span class="chipact">
+        <button class="edit" aria-label="${T.edit}">✎</button>
+        <button class="del" aria-label="${T.del}">✕</button>
       </span>`;
     chip.tabIndex=0;
     chip.onclick=e=>{
+      if(e.target.closest(".del")){ deleteChore(c,e); return; }
+      if(e.target.closest(".edit")){ startRename(chip,c,e); return; }
       const s=e.target.closest(".step");
       if(s){ c.mins=Math.max(1,Math.min(120,c.mins+(+s.dataset.d))); clickSnd(); }
       else { c.on=!c.on; c.pop=true; clickSnd(); if(c.on) sparkle(e.clientX,e.clientY,18); }
       renderChips();
     };
-    chip.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();c.on=!c.on;c.pop=true;renderChips();}};
+    chip.onkeydown=e=>{
+      if((e.key==="Enter"||e.key===" ")&&!e.target.closest("button,input")){e.preventDefault();c.on=!c.on;c.pop=true;renderChips();}
+    };
     if(c.pop){chip.classList.add("pop");c.pop=false;}
     chipsEl.appendChild(chip);
   });
   updateBudget();
 }
 
+function deleteChore(c,e){
+  chores=chores.filter(x=>x!==c);
+  delSnd(); if(e) sparkle(e.clientX,e.clientY,16);
+  renderChips();
+}
+
+function startRename(chip,c,e){
+  if(e) e.stopPropagation();
+  const nameEl=chip.querySelector(".name");
+  const inp=document.createElement("input");
+  inp.type="text"; inp.className="rename"; inp.maxLength=28; inp.value=nameOf(c);
+  nameEl.replaceWith(inp);
+  inp.focus(); inp.select();
+  let closed=false;
+  const commit=save=>{
+    if(closed) return; closed=true;
+    if(save){ const v=inp.value.trim(); if(v){ delete c.k; c.name=v; clickSnd(); } }
+    renderChips();
+  };
+  inp.onclick=ev=>ev.stopPropagation();
+  inp.onkeydown=ev=>{ ev.stopPropagation(); if(ev.key==="Enter"){ commit(true); } else if(ev.key==="Escape"){ commit(false); } };
+  inp.onblur=()=>commit(true);
+}
+
 $("mascot").onclick=e=>{ sparkle(e.clientX,e.clientY,40); popSnd(2); shout(L().shouts[(Math.random()*L().shouts.length)|0]); };
+$("title").addEventListener("click",e=>{
+  const w=e.target.closest(".w"); if(!w) return;
+  w.classList.remove("pop"); void w.offsetWidth; w.classList.add("pop");
+  w.addEventListener("animationend",()=>w.classList.remove("pop"),{once:true});
+  sparkle(e.clientX,e.clientY,14); clickSnd();
+});
 
 $("addBtn").onclick=e=>{
   const n=$("newName").value.trim();
@@ -776,12 +1126,16 @@ $("newName").onkeydown=e=>{if(e.key==="Enter")$("addBtn").click();};
 
 $("makeBtn").onclick=()=>{
   const {s,e}=windowMins();
-  deadlineAbs=e; planStartedAt=Date.now();
+  deadlineAbs=e; planStartedAt=Date.now(); lastDone=-1;
   applyBand(bandFor(s));
   let t=s;
   plan=chores.filter(c=>c.on).sort((a,b)=>a.mins-b.mins).map(c=>{
     const it={...c,start:t,end:t+c.mins,done:false}; t+=c.mins; return it;
   });
+  if(plan.length>1){
+    plan[(Math.random()*plan.length)|0].gold=true;       /* lucky golden chore */
+    plan.reduce((a,b)=>b.mins>a.mins?b:a).boss=true;     /* longest = boss */
+  }
   shout(L().t.letsgo); burst(120); tadaSnd();
   $("setup").classList.add("hidden"); $("board").classList.remove("hidden");
   updateBoardTitle();
@@ -799,6 +1153,244 @@ function updateBoardTitle(){
   $("deadSub").textContent=`🏁 ${T.finishBy} ${fmt(deadlineAbs)} · ${spare>0?T.spareS.replace("{m}",spare):T.exactS}`;
 }
 
+/* ============ SPEED CHECK (finished suspiciously fast?) ============ */
+let fcStep=0, fcSteps=[], lastDone=-1;
+let holdRAF=0, holdStart=0, holdDone=false, holdSec=0;
+function needsSpeedCheck(){
+  if(plan.fchecked) return false;                 /* passing is the only way out */
+  const planned=plan.reduce((s,c)=>s+c.mins,0);
+  const actual=(Date.now()-planStartedAt)/60000;
+  return planned>=4 && actual<planned*.5;
+}
+function openFcheck(){
+  const F=L().t.fc;
+  fcStep=0; holdDone=false; holdStart=0;
+  const pool=[...plan];
+  const a=pool.splice((Math.random()*pool.length)|0,1)[0];
+  const b=pool.length?pool.splice((Math.random()*pool.length)|0,1)[0]:null;
+  fcSteps=[
+    {q:F.qs[0].q,y:F.qs[0].y,n:F.qs[0].n},
+    {q:F.qs[1].q.replace("{c}",nameOf(a)),y:F.qs[1].y,n:F.qs[1].n,chore:a},
+    ...(b?[{q:F.qs[1].q.replace("{c}",nameOf(b)),y:F.qs[1].y,n:F.qs[1].n,chore:b}]:[]),
+    {q:F.qs[2].q,y:F.qs[2].y,n:F.qs[2].n},
+    {q:F.hold.q,y:F.hold.y,n:F.hold.n,hold:true}
+  ];
+  renderFc(); $("fcheck").classList.remove("hidden");
+}
+function renderFc(){
+  const st=fcSteps[fcStep]; if(!st) return;
+  $("fcT").textContent=L().t.fc.title;
+  $("fcQ").textContent=st.q;
+  $("fcYes").textContent=st.y; $("fcNo").textContent=st.n;
+  $("fcYes").classList.toggle("hold",!!st.hold);
+  $("fcYes").style.background="";
+  $("fcDots").innerHTML=fcSteps.map((_,i)=>'<i'+(i===fcStep?' class="on"':'')+'></i>').join("");
+}
+function paintHold(p){
+  $("fcYes").style.background = p>0 ? `linear-gradient(90deg,var(--amber) ${(p*100).toFixed(1)}%,var(--ember) ${(p*100).toFixed(1)}%)` : "";
+}
+function beginHold(){
+  const st=fcSteps[fcStep];
+  if(!st||!st.hold||holdStart||holdDone) return;
+  holdStart=Date.now(); holdSec=0;
+  const tick=()=>{
+    if(!holdStart) return;
+    const p=Math.min(1,(Date.now()-holdStart)/3000);
+    paintHold(p);
+    const sec=Math.floor(p*3);
+    if(sec>holdSec){ holdSec=sec; beep(480+sec*170,.09,"square",.1); }
+    if(p>=1){ holdDone=true; holdStart=0; fcPass(); return; }
+    holdRAF=requestAnimationFrame(tick);
+  };
+  tick();
+}
+function endHold(){
+  if(holdDone||!holdStart) return;
+  cancelAnimationFrame(holdRAF); holdStart=0;
+  paintHold(0); shout(L().t.fc.hold.oops); delSnd();
+}
+function fcPass(){
+  plan.fchecked=true;
+  cancelAnimationFrame(holdRAF);
+  $("fcheck").classList.add("hidden");
+  shout(L().t.fc.pass); boomSnd(); sparkle(innerWidth/2,innerHeight*.4,60);
+  setTimeout(renderBoard,750);
+}
+function fcFail(st){
+  cancelAnimationFrame(holdRAF); holdStart=0; holdDone=false;
+  $("fcheck").classList.add("hidden");
+  let target=(st&&st.chore&&st.chore.done)?st.chore:null;
+  if(!target){
+    const idx=(lastDone>=0&&plan[lastDone]&&plan[lastDone].done)?lastDone:plan.map(c=>!!c.done).lastIndexOf(true);
+    if(idx>=0) target=plan[idx];
+  }
+  if(target) target.done=false;
+  combo=0; shout(L().t.fc.go); delSnd();
+  renderBoard();
+}
+$("fcYes").onclick=()=>{ const st=fcSteps[fcStep]; if(!st||st.hold) return; clickSnd(); fcStep++; renderFc(); };
+$("fcNo").onclick=()=>{ clickSnd(); fcFail(fcSteps[fcStep]); };
+{
+  const fy=$("fcYes");
+  fy.addEventListener("pointerdown",e=>{ const st=fcSteps[fcStep]; if(st&&st.hold){ e.preventDefault(); if(fy.setPointerCapture)try{fy.setPointerCapture(e.pointerId)}catch(_){} beginHold(); } });
+  ["pointerup","pointercancel","pointerleave"].forEach(ev=>fy.addEventListener(ev,endHold));
+  fy.addEventListener("keydown",e=>{ const st=fcSteps[fcStep]; if(st&&st.hold&&(e.key===" "||e.key==="Enter")){ e.preventDefault(); if(!e.repeat) beginHold(); } });
+  fy.addEventListener("keyup",e=>{ if(e.key===" "||e.key==="Enter") endHold(); });
+}
+
+/* ============ PARENT CHECK (grown-up sign-off) ============ */
+let pcStep=1, pcLineIdx=0, pcRedo=new Set();
+let pHoldRAF=0, pHoldStart=0, pHoldDone=false;
+function openParent(){
+  pcStep=1; pcRedo=new Set(); pHoldDone=false; pHoldStart=0;
+  vcState="idle"; stopVoice();
+  renderParent(); $("pcheck").classList.remove("hidden");
+}
+function renderParent(){
+  const P=L().t.pc, st=pcStep, two=st===2;
+  $("pcMoji").textContent=st===3?"🎙️":two?"🧐":"🚨";
+  $("pcT").textContent=st===3?P.vc.t:two?P.t2:P.t1;
+  $("pcB").textContent=st===3?P.vc.b:two?"“"+P.say[pcLineIdx%P.say.length]+"”":P.b1;
+  $("pcHint").classList.toggle("hidden",!two);
+  $("pcHint").textContent=P.hint;
+  $("pcList").classList.toggle("hidden",!two);
+  $("vcWrap").classList.toggle("hidden",st!==3);
+  const m=$("pcMain");
+  m.classList.toggle("hold",st===3&&vcState==="error");
+  m.style.background="";
+  if(st===3){
+    m.textContent= vcState==="error"?P.sign : vcState==="listening"?P.vc.listen : (vcState==="fail"||vcState==="none")?P.vc.again : vcState==="pass"?P.vc.pass : P.vc.start;
+    $("pcAlt").textContent=P.vc.goback;
+    $("vcPhrase").textContent=P.vc.phrase;
+    $("vLow").textContent=P.vc.low; $("vHigh").textContent=P.vc.high;
+    $("vcPriv").textContent=P.vc.priv;
+    $("vcStatus").textContent= vcState==="listening"?P.vc.listen: vcState==="fail"?P.vc.fail: vcState==="none"?P.vc.none: vcState==="error"?P.vc.err: vcState==="pass"?P.vc.pass:"";
+  } else {
+    m.textContent=two?P.toVoice:P.here;
+    $("pcAlt").textContent=two?P.back:P.notyet;
+  }
+  if(two){
+    $("pcList").innerHTML="";
+    plan.forEach((c,i)=>{
+      const row=document.createElement("div");
+      row.className="hrow"+(pcRedo.has(i)?" redo":"");
+      row.innerHTML=`<div class="hd"><span>${pcRedo.has(i)?"↺":"✅"} ${nameOf(c)}</span><span class="fb">${c.mins}${L().t.mS}</span></div>`;
+      row.onclick=()=>{ pcRedo.has(i)?pcRedo.delete(i):pcRedo.add(i); clickSnd(); renderParent(); };
+      $("pcList").appendChild(row);
+    });
+  }
+}
+function pcHere(){ pcStep=2; pcLineIdx=(Math.random()*97)|0; dingSnd(); renderParent(); }
+function pcApprove(){
+  stopVoice();
+  plan.parentOK=true;
+  $("pcheck").classList.add("hidden");
+  $("parentSay").textContent="“"+L().t.pc.approved+"”";
+  shout(L().t.pc.okShout); boomSnd(); sparkle(innerWidth/2,innerHeight*.4,60);
+  setTimeout(renderBoard,650);
+}
+function pcSendBack(){
+  stopVoice();
+  const card=document.querySelector("#pcheck .tcard");
+  if(!pcRedo.size){ card.classList.remove("shake"); void card.offsetWidth; card.classList.add("shake"); delSnd(); return; }
+  pcRedo.forEach(i=>{ if(plan[i]) plan[i].done=false; });
+  pcRedo=new Set();
+  $("pcheck").classList.add("hidden");
+  combo=0; shout(L().t.pc.backShout); delSnd();
+  renderBoard();
+}
+function pcHoldBegin(){
+  if(!(pcStep===3&&vcState==="error")||pHoldStart||pHoldDone) return;
+  pHoldStart=Date.now();
+  const tick=()=>{
+    if(!pHoldStart) return;
+    const p=Math.min(1,(Date.now()-pHoldStart)/2000);
+    $("pcMain").style.background=p>0?`linear-gradient(90deg,var(--amber) ${(p*100).toFixed(1)}%,var(--ember) ${(p*100).toFixed(1)}%)`:"";
+    if(p>=1){ pHoldDone=true; pHoldStart=0; pcApprove(); return; }
+    pHoldRAF=requestAnimationFrame(tick);
+  };
+  tick();
+}
+function pcHoldEnd(){
+  if(pHoldDone||!pHoldStart) return;
+  cancelAnimationFrame(pHoldRAF); pHoldStart=0;
+  $("pcMain").style.background=""; delSnd();
+}
+/* --- voice check: local pitch analysis, nothing recorded --- */
+let vcState="idle", vcStream=null, vcRAF=0, vcSamples=[];
+const vcBuf=new Float32Array(2048), VC_MAX_HZ=235;
+function detectPitch(buf,sr){
+  const N=buf.length;
+  let energy=0; for(let i=0;i<N;i++) energy+=buf[i]*buf[i];
+  if(Math.sqrt(energy/N)<0.02) return -1;                 /* too quiet = not voicing */
+  const minLag=Math.floor(sr/380), maxLag=Math.min(N-8,Math.floor(sr/70));
+  let best=-1,bestC=0;
+  for(let lag=minLag;lag<=maxLag;lag++){
+    let c=0;
+    for(let i=0;i<N-lag;i++) c+=buf[i]*buf[i+lag];
+    if(c>bestC){bestC=c;best=lag;}
+  }
+  return (best>0&&bestC/energy>0.25)?sr/best:-1;
+}
+function vcNeedle(hz){ const pct=Math.min(100,Math.max(0,(hz-80)/280*100)); $("vNeedle").style.left=pct+"%"; }
+async function vcStart(){
+  stopVoice(); vcSamples=[]; vcState="listening"; renderParent();
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ vcState="error"; renderParent(); delSnd(); return; }
+  let stream;
+  try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }
+  catch(e){ vcState="error"; renderParent(); delSnd(); return; }
+  vcStream=stream;
+  try{
+    audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==="suspended") await audioCtx.resume();
+    const src=audioCtx.createMediaStreamSource(stream);
+    const an=audioCtx.createAnalyser(); an.fftSize=2048;
+    src.connect(an);
+    const deadline=Date.now()+7000;
+    const loop=()=>{
+      if(vcState!=="listening") return;
+      an.getFloatTimeDomainData(vcBuf);
+      const hz=detectPitch(vcBuf,audioCtx.sampleRate);
+      if(hz>0){ vcSamples.push(hz); vcNeedle(hz); }
+      if(vcSamples.length>=26){ vcFinish(); return; }
+      if(Date.now()>deadline){ vcSamples.length>=10?vcFinish():vcNone(); return; }
+      vcRAF=requestAnimationFrame(loop);
+    };
+    loop();
+  }catch(e){ stopVoice(); vcState="error"; renderParent(); }
+}
+function vcFinish(){
+  stopVoice();
+  const a=[...vcSamples].sort((x,y)=>x-y), med=a[(a.length/2)|0];
+  vcNeedle(med);
+  if(med<=VC_MAX_HZ){ vcState="pass"; renderParent(); dingSnd(); boomSnd(); setTimeout(pcApprove,900); }
+  else { vcState="fail"; renderParent(); delSnd(); }
+}
+function vcNone(){ stopVoice(); vcState="none"; renderParent(); }
+function stopVoice(){
+  cancelAnimationFrame(vcRAF);
+  if(vcStream){ vcStream.getTracks().forEach(t=>t.stop()); vcStream=null; }
+}
+$("pcMain").onclick=()=>{
+  if(pcStep===1){ clickSnd(); pcHere(); }
+  else if(pcStep===2){ clickSnd(); pcStep=3; vcState="idle"; renderParent(); }
+  else if(vcState==="idle"||vcState==="fail"||vcState==="none"){ clickSnd(); vcStart(); }
+};
+$("pcAlt").onclick=()=>{ clickSnd();
+  if(pcStep===3){ stopVoice(); vcState="idle"; pcStep=2; renderParent(); }
+  else if(pcStep===2) pcSendBack();
+  else $("pcheck").classList.add("hidden");
+};
+{
+  const pm=$("pcMain");
+  pm.addEventListener("pointerdown",e=>{ if(pcStep===3&&vcState==="error"){ e.preventDefault(); if(pm.setPointerCapture)try{pm.setPointerCapture(e.pointerId)}catch(_){} pcHoldBegin(); } });
+  ["pointerup","pointercancel","pointerleave"].forEach(ev=>pm.addEventListener(ev,pcHoldEnd));
+  pm.addEventListener("keydown",e=>{ if(pcStep===3&&vcState==="error"&&(e.key===" "||e.key==="Enter")){ e.preventDefault(); if(!e.repeat) pcHoldBegin(); } });
+  pm.addEventListener("keyup",e=>{ if(e.key===" "||e.key==="Enter") pcHoldEnd(); });
+}
+$("pcallBtn").onclick=()=>{ clickSnd(); openParent(); };
+$("pcheck").addEventListener("click",e=>{ if(e.target===$("pcheck")){ stopVoice(); $("pcheck").classList.add("hidden"); } });
+
 /* ================= BOARD ================= */
 let lastCheck=0, combo=0;
 function renderBoard(zapIdx=-1){
@@ -807,7 +1399,7 @@ function renderBoard(zapIdx=-1){
   const nextIdx=plan.findIndex(c=>!c.done);
   plan.forEach((c,i)=>{
     const li=document.createElement("li");
-    li.className=(c.done?"done":"")+(i===nextIdx?" now":"")+(i===zapIdx?" zap":"");
+    li.className=(c.done?"done":"")+(i===nextIdx?" now":"")+(i===zapIdx?" zap":"")+(c.gold?" gold":"")+(c.boss?" boss":"");
     li.style.animationDelay=(i*60)+"ms";
     li.innerHTML=`<span class="clock">${fmt(c.start)}</span><span class="task">${nameOf(c)}</span>
       <span class="dur">${c.mins}${T.mS}</span>
@@ -815,10 +1407,15 @@ function renderBoard(zapIdx=-1){
     li.querySelector(".tick").onclick=e=>{
       c.done=!c.done;
       if(c.done){
+        lastDone=i;
         const now=Date.now();
         combo = now-lastCheck<5000 ? combo+1 : 1; lastCheck=now;
         sparkle(e.clientX,e.clientY,50); popSnd(combo);
-        if(combo>=2){ shout(T.combo.replace("{n}",combo)); burst(60+combo*35); }
+        if(combo>=3) firework(e.clientX);
+        if(combo>=4) flashGold();
+        if(c.gold){ shout(T.gold); goldSnd(); burst(170); firework(e.clientX); }
+        else if(c.boss){ shout(T.boss); boomSnd(); burst(150); }
+        else if(combo>=2){ shout(T.combo.replace("{n}",combo)); burst(60+combo*35); }
         else { shout(L().shouts[(Math.random()*L().shouts.length)|0]); burst(90); }
       }
       renderBoard(i);
@@ -832,6 +1429,14 @@ function renderBoard(zapIdx=-1){
   positionSky(p);
 
   const all=done===plan.length;
+  if(all && !renderBoard.party && needsSpeedCheck()){ $("free").classList.add("hidden"); $("pcallBtn").classList.add("hidden"); openFcheck(); return; }
+  if(all && !renderBoard.party && !plan.parentOK){
+    $("free").classList.add("hidden");
+    $("pcallBtn").classList.remove("hidden");
+    if(!plan.parentAsked){ plan.parentAsked=true; openParent(); }
+    return;
+  }
+  $("pcallBtn").classList.add("hidden");
   $("free").classList.toggle("hidden",!all);
   if(all && !renderBoard.party){
     renderBoard.party=true;
@@ -839,17 +1444,25 @@ function renderBoard(zapIdx=-1){
     if(!plan.saved){
       plan.saved=true;
       const actual=Math.max(1,Math.round((Date.now()-planStartedAt)/60000));
+      const prevBest=hist.length?Math.min(...hist.map(h=>h.a)):Infinity;
       hist.unshift({d:new Date().toISOString(),n:plan.length,p:plan.reduce((s,c)=>s+c.mins,0),a:actual,b:band});
-      saveHist();
+      saveHist(); updateBadge();
+      if(hist.length>1 && actual<prevBest){
+        setTimeout(()=>{ shout(L().t.rec); tadaSnd(); boomSnd(); firework(innerWidth*.3); firework(innerWidth*.7); },6400);
+      }
     }
+    const st=computeStats();
+    $("freeStreak").textContent = st && st.streak>=2 ? T.streakMsg.replace("{n}",st.streak) : "";
     megaParty();
   }
   if(!all) renderBoard.party=false;
 }
 
 function megaParty(){
-  tadaSnd(); setTimeout(tadaSnd,700);
+  tadaSnd(); setTimeout(tadaSnd,700); boomSnd();
   if(reduce) return;
+  for(let f=0;f<8;f++) setTimeout(()=>firework(innerWidth*(0.12+Math.random()*.76)), 250+f*430);
+  trailUntil=Date.now()+12000;
   $("flash").classList.remove("on"); void $("flash").offsetWidth; $("flash").classList.add("on");
   document.body.classList.add("shake"); setTimeout(()=>document.body.classList.remove("shake"),560);
   shout(L().t.freetime);
@@ -868,13 +1481,18 @@ $("againBtn").onclick=e=>{ megaParty(); sparkle(e.clientX,e.clientY,60); };
 
 function shout(t){
   if(reduce) return;
-  const s=$("shout"); s.textContent=t; s.classList.remove("go"); void s.offsetWidth; s.classList.add("go");
+  const s=$("shout"); s.textContent=t;
+  const glow=COLORS[(Math.random()*COLORS.length)|0];
+  s.style.textShadow=`0 0 34px ${glow}, 0 0 14px ${glow}, 0 7px 0 var(--ember)`;
+  s.classList.remove("go"); void s.offsetWidth; s.classList.add("go");
 }
 
 $("resetBtn").onclick=()=>{
   chores=chores.map(c=>({...c,on:false})); plan=[]; renderBoard.party=false; combo=0;
   $("board").classList.add("hidden"); $("setup").classList.remove("hidden");
-  $("free").classList.add("hidden"); renderChips(); scrollTo(0,0);
+  $("free").classList.add("hidden"); $("freeStreak").textContent=""; $("parentSay").textContent="";
+  stopVoice(); $("pcallBtn").classList.add("hidden"); $("pcheck").classList.add("hidden");
+  renderChips(); scrollTo(0,0);
 };
 
 /* ================= TUTORIAL ================= */
@@ -901,7 +1519,7 @@ $("helpBtn").onclick=()=>{ clickSnd(); openTut(); };
 $("tClose").onclick=()=>{ clickSnd(); closeTut(); };
 $("tut").addEventListener("click",e=>{ if(e.target===$("tut")) closeTut(); });
 $("hist").addEventListener("click",e=>{ if(e.target===$("hist")) $("hist").classList.add("hidden"); });
-addEventListener("keydown",e=>{ if(e.key==="Escape"){ if(!$("tut").classList.contains("hidden")) closeTut(); $("hist").classList.add("hidden"); } });
+addEventListener("keydown",e=>{ if(e.key==="Escape"){ if(!$("fcheck").classList.contains("hidden")){ fcFail(); return; } if(!$("pcheck").classList.contains("hidden")){ stopVoice(); $("pcheck").classList.add("hidden"); return; } if(!$("tut").classList.contains("hidden")) closeTut(); $("hist").classList.add("hidden"); } });
 
 /* ================= PARTICLES ================= */
 const COLORS=["#FFD23F","#FF9505","#F25C05","#C81D25","#FFF4DA"];
@@ -910,6 +1528,10 @@ const ev=$("embers"), ectx=ev.getContext("2d");
 let bits=[], sparks=[], shoots=[];
 function size(){ [cv,ev].forEach(c=>{c.width=innerWidth;c.height=innerHeight;}); }
 addEventListener("resize",size); size();
+addEventListener("pointermove",e=>{
+  if(reduce||Date.now()>trailUntil||Math.random()<.45) return;
+  sparks.push({x:e.clientX,y:e.clientY,vx:(Math.random()-.5)*2,vy:-1-Math.random()*1.5,life:26,c:COLORS[(Math.random()*COLORS.length)|0],s:1.4+Math.random()*1.8});
+});
 
 function make(x,y,vx,vy){
   return {x,y,vx,vy,s:5+Math.random()*10,r:Math.random()*6,vr:(Math.random()-.5)*.55,
@@ -932,6 +1554,19 @@ function sparkle(x,y,n){
   for(let i=0;i<n;i++){
     const a=Math.random()*Math.PI*2, sp=1+Math.random()*7;
     sparks.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-1,life:45,c:COLORS[(Math.random()*COLORS.length)|0],s:2+Math.random()*3});
+  }
+}
+let rockets=[], trailUntil=0;
+function firework(x){
+  if(reduce) return;
+  rockets.push({x:x??innerWidth/2, y:innerHeight+8, vx:(Math.random()-.5)*1.6, vy:-(12+Math.random()*4.5), ty:innerHeight*(0.16+Math.random()*0.28), c:COLORS[(Math.random()*COLORS.length)|0]});
+}
+function explode(x,y,c){
+  beep(130,.18,"sine",.06);
+  const n=46+(Math.random()*26|0);
+  for(let i=0;i<n;i++){
+    const a=Math.PI*2*i/n+Math.random()*.25, sp=2.4+Math.random()*4.6;
+    sparks.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:52+Math.random()*22,c:Math.random()<.25?"#FFF4DA":c,s:1.8+Math.random()*2.2,crackle:Math.random()<.22});
   }
 }
 let emb=[];
@@ -957,6 +1592,14 @@ for(let i=0;i<45;i++) emb.push({x:Math.random()*innerWidth,y:Math.random()*inner
   ectx.globalAlpha=1;
 
   ctx.clearRect(0,0,cv.width,cv.height);
+  rockets=rockets.filter(r=>!r.dead);
+  for(const r of rockets){
+    r.x+=r.vx; r.y+=r.vy; r.vy+=.14;
+    sparks.push({x:r.x,y:r.y+5,vx:(Math.random()-.5)*.8,vy:1.2,life:13,c:r.c,s:1.4});
+    ctx.globalAlpha=.95; ctx.fillStyle="#FFF4DA";
+    ctx.beginPath(); ctx.arc(r.x,r.y,2.6,0,7); ctx.fill();
+    if(r.vy>=-1.6||r.y<=r.ty){ r.dead=true; explode(r.x,r.y,r.c); }
+  }
   bits=bits.filter(b=>b.life>0&&b.y<cv.height+60);
   for(const b of bits){
     b.vy+=.3; b.x+=b.vx+Math.sin(b.life/9)*.8; b.y+=b.vy; b.vx*=.99; b.r+=b.vr; b.life--;
@@ -970,7 +1613,12 @@ for(let i=0;i<45;i++) emb.push({x:Math.random()*innerWidth,y:Math.random()*inner
   sparks=sparks.filter(s=>s.life>0);
   for(const s of sparks){
     s.vy+=.12; s.x+=s.vx; s.y+=s.vy; s.life--;
-    ctx.globalAlpha=s.life/45; ctx.fillStyle=s.c;
+    if(s.crackle&&s.life<=1){
+      s.crackle=false;
+      for(let k=0;k<6;k++){ const a=Math.random()*6.283, sp=1+Math.random()*2.5;
+        sparks.push({x:s.x,y:s.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:18,c:"#FFF4DA",s:1.3}); }
+    }
+    ctx.globalAlpha=Math.min(1,s.life/45); ctx.fillStyle=s.c;
     ctx.beginPath(); ctx.arc(s.x,s.y,s.s,0,7); ctx.fill();
   }
   ctx.globalAlpha=1;
